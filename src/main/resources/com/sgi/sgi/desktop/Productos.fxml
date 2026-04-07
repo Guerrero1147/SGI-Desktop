@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+<?import java.lang.String?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.sgi.sgi.desktop.ProductosController"
+            style="-fx-background-color: #1a1a2e;">
+    <stylesheets>
+        <String fx:value="/com/sgi/sgi/desktop/estilo.css"/>
+    </stylesheets>
+
+    <top>
+        <VBox style="-fx-background-color: #1a1a2e; -fx-padding: 25 25 10 25;" spacing="15">
+
+            <!-- Título -->
+            <Label text="Gestión de Productos"
+                   style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+
+            <!-- Barra de búsqueda y botón agregar -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <TextField fx:id="txtBuscar"
+                           promptText="🔍 Buscar producto por nombre o código..."
+                           prefWidth="350"
+                           onKeyReleased="#buscarProducto"
+                           style="-fx-background-color: #0f3460; -fx-text-fill: white;
+                                  -fx-prompt-text-fill: #546e7a; -fx-background-radius: 6;
+                                  -fx-padding: 10; -fx-font-size: 13px;
+                                  -fx-border-color: #1565c0; -fx-border-radius: 6;"/>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <Button text="➕  Agregar Producto" onAction="#abrirFormularioAgregar"
+                        style="-fx-background-color: #1565c0; -fx-text-fill: white;
+                               -fx-font-size: 13px; -fx-padding: 10 20 10 20;
+                               -fx-background-radius: 6; -fx-cursor: hand;"/>
+
+                <Button text="🔄  Actualizar" onAction="#cargarProductos"
+                        style="-fx-background-color: #0f3460; -fx-text-fill: #90caf9;
+                               -fx-font-size: 13px; -fx-padding: 10 20 10 20;
+                               -fx-background-radius: 6; -fx-cursor: hand;
+                               -fx-border-color: #1565c0; -fx-border-radius: 6;"/>
+            </HBox>
+
+            <!-- Mensaje de estado -->
+            <Label fx:id="lblMensaje" text=""
+                   style="-fx-font-size: 12px; -fx-text-fill: #66bb6a;"/>
+
+        </VBox>
+    </top>
+
+    <!-- TABLA DE PRODUCTOS -->
+    <center>
+        <VBox style="-fx-padding: 0 25 25 25; -fx-background-color: #1a1a2e;">
+            <TableView fx:id="tablaProductos" VBox.vgrow="ALWAYS"
+                       style="-fx-background-color: #0f3460; -fx-background-radius: 8;
+                              -fx-border-color: #1565c0; -fx-border-radius: 8;">
+                <columns>
+                    <TableColumn fx:id="colCodigo" text="Código" prefWidth="100"
+                                 style="-fx-background-color: #1565c0; -fx-font-weight: bold;"/>
+                    <TableColumn fx:id="colNombre" text="Nombre" prefWidth="180"
+                                 style="-fx-background-color: #1565c0; -fx-font-weight: bold;"/>
+                    <TableColumn fx:id="colCategoria" text="Categoría" prefWidth="120"
+                                 style="-fx-background-color: #1565c0; -fx-font-weight: bold;"/>
+                    <TableColumn fx:id="colPrecioCompra" text="P. Compra" prefWidth="100"
+                                 style="-fx-background-color: #1565c0; -fx-font-weight: bold;"/>
+                    <TableColumn fx:id="colPrecioVenta" text="P. Venta" prefWidth="100"
+                                 style="-fx-background-color: #1565c0; -fx-font-weight: bold;"/>
+                    <TableColumn fx:id="colStock" text="Stock" prefWidth="80"
+                                 style="-fx-background-color: #1565c0; -fx-font-weight: bold;"/>
+                    <TableColumn fx:id="colStockMin" text="Stock Mín." prefWidth="90"
+                                 style="-fx-background-color: #1565c0; -fx-font-weight: bold;"/>
+                    <TableColumn fx:id="colAcciones" text="Acciones" prefWidth="160"
+                                 style="-fx-background-color: #1565c0; -fx-font-weight: bold;"/>
+                </columns>
+                <placeholder>
+                    <Label text="No hay productos registrados aún"
+                           style="-fx-text-fill: #546e7a; -fx-font-size: 14px;"/>
+                </placeholder>
+            </TableView>
+        </VBox>
+    </center>
+
+    <!-- FORMULARIO LATERAL (agregar/editar) -->
+    <right>
+        <VBox fx:id="panelFormulario" spacing="12" prefWidth="300" minWidth="300"
+              style="-fx-background-color: #16213e; -fx-padding: 25;"
+              visible="false" managed="false">
+
+            <Label fx:id="lblTituloForm" text="Agregar Producto"
+                   style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+
+            <Label text="Código" style="-fx-text-fill: #90caf9; -fx-font-size: 12px;"/>
+            <TextField fx:id="txtCodigo" promptText="Ej: PROD-001"
+                       style="-fx-background-color: #0f3460; -fx-text-fill: white;
+                              -fx-prompt-text-fill: #546e7a; -fx-background-radius: 6;
+                              -fx-padding: 8; -fx-border-color: #1565c0; -fx-border-radius: 6;"/>
+
+            <Label text="Nombre" style="-fx-text-fill: #90caf9; -fx-font-size: 12px;"/>
+            <TextField fx:id="txtNombre" promptText="Nombre del producto"
+                       style="-fx-background-color: #0f3460; -fx-text-fill: white;
+                              -fx-prompt-text-fill: #546e7a; -fx-background-radius: 6;
+                              -fx-padding: 8; -fx-border-color: #1565c0; -fx-border-radius: 6;"/>
+
+            <Label text="Descripción" style="-fx-text-fill: #90caf9; -fx-font-size: 12px;"/>
+            <TextField fx:id="txtDescripcion" promptText="Descripción (opcional)"
+                       style="-fx-background-color: #0f3460; -fx-text-fill: white;
+                              -fx-prompt-text-fill: #546e7a; -fx-background-radius: 6;
+                              -fx-padding: 8; -fx-border-color: #1565c0; -fx-border-radius: 6;"/>
+
+            <Label text="Categoría" style="-fx-text-fill: #90caf9; -fx-font-size: 12px;"/>
+            <ComboBox fx:id="cmbCategoria" maxWidth="Infinity"
+                      style="-fx-background-color: #0f3460; -fx-text-fill: white;
+                             -fx-border-color: #1565c0; -fx-border-radius: 6;"/>
+
+            <HBox spacing="10">
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Precio Compra" style="-fx-text-fill: #90caf9; -fx-font-size: 12px;"/>
+                    <TextField fx:id="txtPrecioCompra" promptText="0.00"
+                               style="-fx-background-color: #0f3460; -fx-text-fill: white;
+                                      -fx-prompt-text-fill: #546e7a; -fx-background-radius: 6;
+                                      -fx-padding: 8; -fx-border-color: #1565c0; -fx-border-radius: 6;"/>
+                </VBox>
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Precio Venta" style="-fx-text-fill: #90caf9; -fx-font-size: 12px;"/>
+                    <TextField fx:id="txtPrecioVenta" promptText="0.00"
+                               style="-fx-background-color: #0f3460; -fx-text-fill: white;
+                                      -fx-prompt-text-fill: #546e7a; -fx-background-radius: 6;
+                                      -fx-padding: 8; -fx-border-color: #1565c0; -fx-border-radius: 6;"/>
+                </VBox>
+            </HBox>
+
+            <HBox spacing="10">
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Stock Actual" style="-fx-text-fill: #90caf9; -fx-font-size: 12px;"/>
+                    <TextField fx:id="txtStock" promptText="0"
+                               style="-fx-background-color: #0f3460; -fx-text-fill: white;
+                                      -fx-prompt-text-fill: #546e7a; -fx-background-radius: 6;
+                                      -fx-padding: 8; -fx-border-color: #1565c0; -fx-border-radius: 6;"/>
+                </VBox>
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Stock Mínimo" style="-fx-text-fill: #90caf9; -fx-font-size: 12px;"/>
+                    <TextField fx:id="txtStockMinimo" promptText="5"
+                               style="-fx-background-color: #0f3460; -fx-text-fill: white;
+                                      -fx-prompt-text-fill: #546e7a; -fx-background-radius: 6;
+                                      -fx-padding: 8; -fx-border-color: #1565c0; -fx-border-radius: 6;"/>
+                </VBox>
+            </HBox>
+
+            <Label fx:id="lblErrorForm" text=""
+                   style="-fx-text-fill: #ef5350; -fx-font-size: 12px; -fx-wrap-text: true;"/>
+
+            <HBox spacing="10">
+                <Button text="💾  Guardar" onAction="#guardarProducto"
+                        HBox.hgrow="ALWAYS" maxWidth="Infinity"
+                        style="-fx-background-color: #1565c0; -fx-text-fill: white;
+                               -fx-font-size: 13px; -fx-padding: 10;
+                               -fx-background-radius: 6; -fx-cursor: hand;"/>
+                <Button text="✖  Cancelar" onAction="#cerrarFormulario"
+                        HBox.hgrow="ALWAYS" maxWidth="Infinity"
+                        style="-fx-background-color: #b71c1c; -fx-text-fill: white;
+                               -fx-font-size: 13px; -fx-padding: 10;
+                               -fx-background-radius: 6; -fx-cursor: hand;"/>
+            </HBox>
+
+        </VBox>
+    </right>
+
+</BorderPane>

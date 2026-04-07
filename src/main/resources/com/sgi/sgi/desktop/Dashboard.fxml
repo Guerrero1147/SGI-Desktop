@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+<?import java.lang.String?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.sgi.sgi.desktop.DashboardController"
+            style="-fx-background-color: #1a1a2e;"
+            minWidth="900" minHeight="600">
+    <stylesheets>
+        <String fx:value="/com/sgi/sgi/desktop/estilo.css"/>
+    </stylesheets>
+
+    <!-- MENU LATERAL IZQUIERDO -->
+    <left>
+        <VBox spacing="5"
+              style="-fx-background-color: #16213e; -fx-padding: 20;"
+              prefWidth="200" minWidth="200">
+
+            <Label text="SGI Desktop"
+                   style="-fx-font-size: 18px; -fx-font-weight: bold;
+                          -fx-text-fill: #4fc3f7; -fx-padding: 0 0 20 0;"/>
+
+            <Button fx:id="btnInicio" text="🏠  Inicio" maxWidth="Infinity"
+                    onAction="#mostrarDashboard"
+                    style="-fx-background-color: #1565c0; -fx-text-fill: white;
+                           -fx-font-size: 13px; -fx-padding: 10; -fx-cursor: hand;
+                           -fx-background-radius: 6; -fx-alignment: CENTER-LEFT;"/>
+
+            <Button fx:id="btnProductos" text="📦  Productos" maxWidth="Infinity"
+                    onAction="#mostrarProductos"
+                    style="-fx-background-color: transparent; -fx-text-fill: #90caf9;
+                           -fx-font-size: 13px; -fx-padding: 10; -fx-cursor: hand;
+                           -fx-background-radius: 6; -fx-alignment: CENTER-LEFT;"/>
+
+            <Button fx:id="btnMovimientos" text="📋  Movimientos" maxWidth="Infinity"
+                    onAction="#mostrarMovimientos"
+                    style="-fx-background-color: transparent; -fx-text-fill: #90caf9;
+                           -fx-font-size: 13px; -fx-padding: 10; -fx-cursor: hand;
+                           -fx-background-radius: 6; -fx-alignment: CENTER-LEFT;"/>
+
+            <Button fx:id="btnProveedores" text="🏢  Proveedores" maxWidth="Infinity"
+                    onAction="#mostrarProveedores"
+                    style="-fx-background-color: transparent; -fx-text-fill: #90caf9;
+                           -fx-font-size: 13px; -fx-padding: 10; -fx-cursor: hand;
+                           -fx-background-radius: 6; -fx-alignment: CENTER-LEFT;"/>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <Label fx:id="lblUsuario" text="Usuario"
+                   style="-fx-text-fill: #546e7a; -fx-font-size: 11px; -fx-wrap-text: true;"/>
+
+            <Button text="🚪  Cerrar Sesión" maxWidth="Infinity" onAction="#cerrarSesion"
+                    style="-fx-background-color: #b71c1c; -fx-text-fill: white;
+                           -fx-font-size: 13px; -fx-padding: 10; -fx-cursor: hand;
+                           -fx-background-radius: 6; -fx-alignment: CENTER-LEFT;"/>
+        </VBox>
+    </left>
+
+    <!-- CONTENIDO DINÁMICO -->
+    <center>
+        <StackPane fx:id="contenidoPrincipal"
+                   style="-fx-background-color: #1a1a2e;"
+                   BorderPane.alignment="CENTER"/>
+    </center>
+
+</BorderPane>
+

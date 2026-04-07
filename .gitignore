@@ -1,0 +1,14 @@
+# NetBeans
+nbproject/private/
+build/
+dist/
+nbbuild/
+nbdist/
+.nb-gradle/
+
+# Configuración local de BD (cada quien tiene la suya)
+src/config.properties
+
+# Windows
+Thumbs.db
+Desktop.ini

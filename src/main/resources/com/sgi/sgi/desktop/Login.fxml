@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.sgi.sgi.desktop.LoginController"
+      alignment="CENTER"
+      spacing="15"
+      style="-fx-background-color: #1a1a2e;">
+
+    <padding>
+        <Insets top="60" right="80" bottom="60" left="80"/>
+    </padding>
+
+    <!-- Logo / Título -->
+    <Label text="SGI Desktop"
+           style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #4fc3f7;"/>
+
+    <Label text="Sistema de Gestión de Inventarios"
+           style="-fx-font-size: 13px; -fx-text-fill: #90caf9;"/>
+
+    <Region prefHeight="20"/>
+
+    <!-- Caja del formulario -->
+    <VBox spacing="12"
+          alignment="CENTER"
+          style="-fx-background-color: #16213e; -fx-background-radius: 12; -fx-padding: 30;">
+
+        <Label text="Iniciar Sesión"
+               style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+
+        <Region prefHeight="10"/>
+
+        <!-- Usuario -->
+        <Label text="Usuario"
+               style="-fx-text-fill: #90caf9; -fx-font-size: 12px;"
+               maxWidth="280" VBox.vgrow="NEVER"/>
+        <TextField fx:id="txtUsuario"
+                   promptText="Ingresa tu usuario"
+                   prefWidth="280"
+                   style="-fx-background-color: #0f3460; -fx-text-fill: white;
+                          -fx-prompt-text-fill: #546e7a; -fx-background-radius: 6;
+                          -fx-padding: 10; -fx-font-size: 13px; -fx-border-color: #1565c0;
+                          -fx-border-radius: 6;"/>
+
+        <!-- Contraseña -->
+        <Label text="Contraseña"
+               style="-fx-text-fill: #90caf9; -fx-font-size: 12px;"
+               maxWidth="280"/>
+        <PasswordField fx:id="txtPassword"
+                       promptText="Ingresa tu contraseña"
+                       prefWidth="280"
+                       style="-fx-background-color: #0f3460; -fx-text-fill: white;
+                              -fx-prompt-text-fill: #546e7a; -fx-background-radius: 6;
+                              -fx-padding: 10; -fx-font-size: 13px; -fx-border-color: #1565c0;
+                              -fx-border-radius: 6;"/>
+
+        <!-- Mensaje de error -->
+        <Label fx:id="lblError"
+               text=""
+               style="-fx-text-fill: #ef5350; -fx-font-size: 12px;"
+               maxWidth="280"/>
+
+        <Region prefHeight="5"/>
+
+        <!-- Botón -->
+        <Button fx:id="btnLogin"
+                text="Ingresar"
+                prefWidth="280"
+                onAction="#handleLogin"
+                style="-fx-background-color: #1565c0; -fx-text-fill: white;
+                       -fx-font-size: 14px; -fx-font-weight: bold;
+                       -fx-background-radius: 6; -fx-padding: 10;
+                       -fx-cursor: hand;"/>
+    </VBox>
+
+    <Region prefHeight="10"/>
+
+    <Label text="© 2026 SGI-Desktop"
+           style="-fx-text-fill: #546e7a; -fx-font-size: 11px;"/>
+
+</VBox>
