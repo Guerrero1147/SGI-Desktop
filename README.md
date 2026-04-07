@@ -29,7 +29,7 @@ URL: https://github.com/Guerrero1147/SGI-Desktop.git
 - Abre el proyecto en NetBeans
 - Click derecho en proyecto y Run maven
 - Click en Goals
-- En Goals ponr (javafx:run) y apretar go
+- En Goals poner (javafx:run) y apretar go
 
 ## 📁 Estructura del proyecto
 - src/ → Código fuente Java y archivos FXML
