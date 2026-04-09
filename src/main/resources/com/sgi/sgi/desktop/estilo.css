@@ -99,3 +99,11 @@
     -fx-text-fill: #cfd8dc;
     -fx-prompt-text-fill: #546e7a;
 }
+
+.table-view .table-row-cell .table-cell {
+    -fx-text-fill: #cfd8dc;
+}
+
+.table-view .table-row-cell:focused:selected .table-cell {
+    -fx-text-fill: #ffd180;
+}

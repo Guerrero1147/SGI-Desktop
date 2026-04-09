@@ -260,8 +260,11 @@ public class ProductosController implements Initializable {
     private void eliminarProducto(Producto p) {
         try {
             Connection con = Conexion.getConexion();
+            // Borrado lógico: no borramos el registro para no romper la FK
+            // con detalle_movimientos (ON DELETE RESTRICT). El producto deja
+            // de aparecer en la UI pero el historial de movimientos queda intacto.
             PreparedStatement ps = con.prepareStatement(
-                "DELETE FROM productos WHERE id_producto = ?");
+                "UPDATE productos SET activo = FALSE WHERE id_producto = ?");
             ps.setInt(1, p.getIdProducto());
             ps.executeUpdate();
             ps.close();

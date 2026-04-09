@@ -9,6 +9,7 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,6 +17,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 /**
  *
@@ -58,8 +60,20 @@ public class MovimientosController implements Initializable {
     private ObservableList<DetalleMovimiento> listaDetalle = FXCollections.observableArrayList();
  
     // Mapa nombre → id de productos
-    private java.util.Map<String, Integer> mapaProductos = new java.util.HashMap<>();
+    private java.util.Map<String, Integer> mapaProductos    = new java.util.HashMap<>();
+    // Mapa nombre → precios del producto
+    private java.util.Map<String, Double>  mapaPrecioCompra = new java.util.HashMap<>();
+    private java.util.Map<String, Double>  mapaPrecioVenta  = new java.util.HashMap<>();
  
+    // Rol del usuario en sesión — lo inyecta DashboardController
+    private String rolUsuario = "";
+
+    /** DashboardController llama este método justo después de cargar el FXML */
+    public void setRol(String rol) {
+        this.rolUsuario = rol;
+        tablaMovimientos.refresh(); // re-renderiza las celdas para mostrar/ocultar Eliminar
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         configurarTablas();
@@ -93,21 +107,36 @@ public class MovimientosController implements Initializable {
             }
         });
  
-        // Botón ver detalle
+        // Botones Ver + Eliminar (Eliminar solo visible para ADMIN)
         colAcciones.setCellFactory(col -> new TableCell<>() {
-            private final Button btn = new Button("👁 Ver");
+            private final Button btnVer      = new Button("👁 Ver");
+            private final Button btnEliminar = new Button("🗑️ Eliminar");
+            private final HBox   hbox        = new HBox(6, btnVer, btnEliminar);
             {
-                btn.setStyle("-fx-background-color: #1565c0; -fx-text-fill: white; " +
+                btnVer.setStyle("-fx-background-color: #1565c0; -fx-text-fill: white; " +
                         "-fx-background-radius: 4; -fx-cursor: hand; -fx-font-size: 11px;");
-                btn.setOnAction(e -> {
+                btnEliminar.setStyle("-fx-background-color: #b71c1c; -fx-text-fill: white; " +
+                        "-fx-background-radius: 4; -fx-cursor: hand; -fx-font-size: 11px;");
+                btnVer.setOnAction(e -> {
                     Movimiento m = getTableView().getItems().get(getIndex());
                     verDetalle(m);
+                });
+                btnEliminar.setOnAction(e -> {
+                    Movimiento m = getTableView().getItems().get(getIndex());
+                    confirmarEliminarMovimiento(m);
                 });
             }
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                setGraphic(empty ? null : btn);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    boolean esAdmin = "ADMIN".equalsIgnoreCase(rolUsuario);
+                    btnEliminar.setVisible(esAdmin);
+                    btnEliminar.setManaged(esAdmin);
+                    setGraphic(hbox);
+                }
             }
         });
  
@@ -146,15 +175,35 @@ public class MovimientosController implements Initializable {
         try {
             Connection con = Conexion.getConexion();
             ResultSet rs = con.createStatement().executeQuery(
-                "SELECT id_producto, nombre FROM productos WHERE activo = TRUE ORDER BY nombre");
+                "SELECT id_producto, nombre, precio_compra, precio_venta " +
+                "FROM productos WHERE activo = TRUE ORDER BY nombre");
             while (rs.next()) {
-                mapaProductos.put(rs.getString("nombre"), rs.getInt("id_producto"));
+                String nombre = rs.getString("nombre");
+                mapaProductos.put(nombre,    rs.getInt("id_producto"));
+                mapaPrecioCompra.put(nombre, rs.getDouble("precio_compra"));
+                mapaPrecioVenta.put(nombre,  rs.getDouble("precio_venta"));
             }
             cmbProducto.setItems(FXCollections.observableArrayList(mapaProductos.keySet()));
             rs.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        // Autollenar precio al seleccionar producto o cambiar tipo de movimiento
+        cmbProducto.valueProperty().addListener((obs, anterior, nuevo) -> autorellenarPrecio());
+        cmbTipo.valueProperty().addListener((obs, anterior, nuevo) -> autorellenarPrecio());
+    }
+
+    private void autorellenarPrecio() {
+        String producto = cmbProducto.getValue();
+        String tipo     = cmbTipo.getValue();
+        if (producto == null || tipo == null) return;
+
+        double precio = tipo.equals("ENTRADA")
+            ? mapaPrecioCompra.getOrDefault(producto, 0.0)
+            : mapaPrecioVenta.getOrDefault(producto, 0.0);
+
+        txtPrecioUnitario.setText(String.format("%.2f", precio));
     }
  
     @FXML
@@ -207,7 +256,7 @@ public class MovimientosController implements Initializable {
         txtObservacion.clear();
         cmbProducto.setValue(null);
         txtCantidad.clear();
-        txtPrecioUnitario.clear();
+        txtPrecioUnitario.setText("0.00");
         lblErrorForm.setText("");
         panelFormulario.setVisible(true);
         panelFormulario.setManaged(true);
@@ -240,7 +289,7 @@ public class MovimientosController implements Initializable {
             listaDetalle.add(new DetalleMovimiento(idProd, nombreProd, cantidad, precio));
             cmbProducto.setValue(null);
             txtCantidad.clear();
-            txtPrecioUnitario.clear();
+            txtPrecioUnitario.setText("0.00");
             lblErrorForm.setText("");
         } catch (NumberFormatException e) {
             lblErrorForm.setText("❌ Cantidad y precio deben ser números válidos.");
@@ -346,6 +395,62 @@ public class MovimientosController implements Initializable {
         }
     }
  
+    // ── Eliminar movimiento (solo admin) ────────────────────────────────────
+
+    private void confirmarEliminarMovimiento(Movimiento m) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmar eliminación");
+        alert.setHeaderText("¿Eliminar movimiento #" + m.getIdMovimiento() + "?");
+        alert.setContentText(
+            "Tipo: " + m.getTipo() + "  |  Fecha: " + m.getFecha() + "\n\n" +
+            "⚠️ Esta acción revertirá el stock de todos los productos\n" +
+            "involucrados y no se puede deshacer.");
+        Optional<ButtonType> res = alert.showAndWait();
+        if (res.isPresent() && res.get() == ButtonType.OK) {
+            eliminarMovimiento(m);
+        }
+    }
+
+    private void eliminarMovimiento(Movimiento m) {
+        try {
+            Connection con = Conexion.getConexion();
+
+            // 1. Leer el detalle ANTES de borrar para poder revertir el stock
+            ResultSet rs = con.createStatement().executeQuery(
+                "SELECT id_producto, cantidad FROM detalle_movimientos " +
+                "WHERE id_movimiento = " + m.getIdMovimiento());
+
+            // Si era ENTRADA restamos stock; si era SALIDA lo devolvemos
+            String sqlStock = "ENTRADA".equals(m.getTipo())
+                ? "UPDATE productos SET stock_actual = stock_actual - ? WHERE id_producto = ?"
+                : "UPDATE productos SET stock_actual = stock_actual + ? WHERE id_producto = ?";
+
+            while (rs.next()) {
+                PreparedStatement psStock = con.prepareStatement(sqlStock);
+                psStock.setInt(1, rs.getInt("cantidad"));
+                psStock.setInt(2, rs.getInt("id_producto"));
+                psStock.executeUpdate();
+                psStock.close();
+            }
+            rs.close();
+
+            // 2. Borrar el movimiento; la FK ON DELETE CASCADE elimina
+            //    automáticamente sus filas en detalle_movimientos
+            PreparedStatement ps = con.prepareStatement(
+                "DELETE FROM movimientos WHERE id_movimiento = ?");
+            ps.setInt(1, m.getIdMovimiento());
+            ps.executeUpdate();
+            ps.close();
+
+            mostrarMensaje("✅ Movimiento eliminado y stock revertido.", true);
+            cargarMovimientos();
+
+        } catch (Exception e) {
+            mostrarMensaje("❌ Error al eliminar: " + e.getMessage(), false);
+            e.printStackTrace();
+        }
+    }
+
     @FXML
     private void cerrarFormulario() {
         panelFormulario.setVisible(false);
@@ -400,5 +505,3 @@ public class MovimientosController implements Initializable {
         public double getPrecioUnitario(){ return precioUnitario; }
     }
 }
-     
-

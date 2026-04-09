@@ -35,7 +35,7 @@ public class LoginController {
 
         // Validar que no estén vacíos
         if (usuario.isEmpty() || password.isEmpty()) {
-            lblError.setText("Por favor ingresa usuario y contraseña.");
+            lblError.setText("Favor de llenar los campos.");
             return;
         }
 

@@ -98,13 +98,23 @@ public class DashboardController implements Initializable{
     @FXML
     public void mostrarMovimientos() {
         marcarBotonActivo(btnMovimientos);
-        cargarVista("Movimientos.fxml");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass()
+                .getResource("/com/sgi/sgi/desktop/Movimientos.fxml"));
+            Parent vista = loader.load();
+            MovimientosController ctrl = loader.getController();
+            ctrl.setRol(rolUsuario);
+            contenidoPrincipal.getChildren().clear();
+            contenidoPrincipal.getChildren().add(vista);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
     public void mostrarProveedores() {
         marcarBotonActivo(btnProveedores);
-        mostrarProximamente("Proveedores");
+        cargarVista("Proveedores.fxml");
     }
 
     private void mostrarProximamente(String modulo) {
