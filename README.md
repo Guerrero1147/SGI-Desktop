@@ -4,7 +4,7 @@ Aplicación de escritorio para gestionar inventario, desarrollada
 en Java con JavaFX y base de datos MySQL.
 
 ## ⚙️ Requisitos
-- Java JDK 23
+- Java JDK 23 (En caso de no tener ese JDK ir a las líneas: 10 y 11 del pom.xml y poner la versión del JDK que usted disponga.)
 - Apache NetBeans IDE 20
 - MySQL Server 8.0
 - MySQL Workbench (opcional, para ver la BD)
