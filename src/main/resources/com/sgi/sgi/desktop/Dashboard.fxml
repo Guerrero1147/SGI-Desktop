@@ -48,6 +48,13 @@
                            -fx-font-size: 13px; -fx-padding: 10; -fx-cursor: hand;
                            -fx-background-radius: 6; -fx-alignment: CENTER-LEFT;"/>
 
+            <!-- Nuevo botón solo visible para ADMIN -->
+            <Button fx:id="btnUsuarios" text="👥  Usuarios" maxWidth="Infinity"
+                    onAction="#mostrarUsuarios"
+                    style="-fx-background-color: transparent; -fx-text-fill: #90caf9;
+                           -fx-font-size: 13px; -fx-padding: 10; -fx-cursor: hand;
+                           -fx-background-radius: 6; -fx-alignment: CENTER-LEFT;"/>
+
             <Region VBox.vgrow="ALWAYS"/>
 
             <Label fx:id="lblUsuario" text="Usuario"
@@ -68,4 +75,3 @@
     </center>
 
 </BorderPane>
-

@@ -38,6 +38,7 @@ public class DashboardController implements Initializable{
     @FXML private Button btnProductos;
     @FXML private Button btnMovimientos;
     @FXML private Button btnProveedores;
+    @FXML private Button btnUsuarios;
     @FXML private Label lblUsuario;
     @FXML private StackPane contenidoPrincipal;
 
@@ -59,16 +60,32 @@ public class DashboardController implements Initializable{
     }
 
     public void setUsuario(String nombre, String rol) {
-        this.nombreUsuario = nombre;
-        this.rolUsuario = rol;
-        lblUsuario.setText("👤 " + nombre + " (" + rol + ")");
+    this.nombreUsuario = nombre;
+    this.rolUsuario = rol;
+    lblUsuario.setText("👤 " + nombre + " (" + rol + ")");
+
+    // Ocultar módulos según rol
+    if ("EMPLEADO".equals(rol)) {
+        btnProveedores.setVisible(false);
+        btnProveedores.setManaged(false);
+        btnProductos.setVisible(false);
+        btnProductos.setManaged(false);
+        btnInicio.setVisible(false);
+        btnInicio.setManaged(false);
+        btnUsuarios.setVisible(false);
+        btnUsuarios.setManaged(false);
+        mostrarMovimientos(); // Entra directo a Movimientos
+    } else {
+        mostrarDashboard(); // ADMIN ve el inicio normal
     }
+}
 
     private void marcarBotonActivo(Button activo) {
         btnInicio.setStyle(ESTILO_INACTIVO);
         btnProductos.setStyle(ESTILO_INACTIVO);
         btnMovimientos.setStyle(ESTILO_INACTIVO);
         btnProveedores.setStyle(ESTILO_INACTIVO);
+        btnUsuarios.setStyle(ESTILO_INACTIVO);
         activo.setStyle(ESTILO_ACTIVO);
     }
 
@@ -128,6 +145,12 @@ public class DashboardController implements Initializable{
         contenidoPrincipal.getChildren().add(vbox);
     }
 
+    @FXML
+    public void mostrarUsuarios() {
+        marcarBotonActivo(btnUsuarios);
+        cargarVista("Usuarios.fxml");
+    }
+    
     private void cargarVistaInicio() {
         try {
             ScrollPane scrollPane = new ScrollPane();

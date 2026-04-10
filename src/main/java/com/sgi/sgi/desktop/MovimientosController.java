@@ -64,6 +64,7 @@ public class MovimientosController implements Initializable {
     // Mapa nombre → precios del producto
     private java.util.Map<String, Double>  mapaPrecioCompra = new java.util.HashMap<>();
     private java.util.Map<String, Double>  mapaPrecioVenta  = new java.util.HashMap<>();
+    private java.util.Map<String, Integer> mapaStock        = new java.util.HashMap<>();
  
     // Rol del usuario en sesión — lo inyecta DashboardController
     private String rolUsuario = "";
@@ -175,13 +176,14 @@ public class MovimientosController implements Initializable {
         try {
             Connection con = Conexion.getConexion();
             ResultSet rs = con.createStatement().executeQuery(
-                "SELECT id_producto, nombre, precio_compra, precio_venta " +
+                "SELECT id_producto, nombre, precio_compra, precio_venta, stock_actual " +
                 "FROM productos WHERE activo = TRUE ORDER BY nombre");
             while (rs.next()) {
                 String nombre = rs.getString("nombre");
                 mapaProductos.put(nombre,    rs.getInt("id_producto"));
                 mapaPrecioCompra.put(nombre, rs.getDouble("precio_compra"));
                 mapaPrecioVenta.put(nombre,  rs.getDouble("precio_venta"));
+                mapaStock.put(nombre,        rs.getInt("stock_actual"));
             }
             cmbProducto.setItems(FXCollections.observableArrayList(mapaProductos.keySet()));
             rs.close();
@@ -258,8 +260,24 @@ public class MovimientosController implements Initializable {
         txtCantidad.clear();
         txtPrecioUnitario.setText("0.00");
         lblErrorForm.setText("");
+        // Recargar stock actualizado desde la BD antes de abrir
+        recargarStock();
         panelFormulario.setVisible(true);
         panelFormulario.setManaged(true);
+    }
+
+    private void recargarStock() {
+        try {
+            Connection con = Conexion.getConexion();
+            ResultSet rs = con.createStatement().executeQuery(
+                "SELECT nombre, stock_actual FROM productos WHERE activo = TRUE");
+            while (rs.next()) {
+                mapaStock.put(rs.getString("nombre"), rs.getInt("stock_actual"));
+            }
+            rs.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
  
     @FXML
@@ -277,7 +295,16 @@ public class MovimientosController implements Initializable {
             }
             String nombreProd = cmbProducto.getValue();
             int idProd = mapaProductos.get(nombreProd);
- 
+
+            // Validar stock disponible en salidas
+            if ("SALIDA".equals(cmbTipo.getValue())) {
+                int stockDisponible = mapaStock.getOrDefault(nombreProd, 0);
+                if (cantidad > stockDisponible) {
+                    lblErrorForm.setText("❌ Stock insuficiente. Disponible: " + stockDisponible);
+                    return;
+                }
+            }
+
             // Verificar si ya está en la lista
             for (DetalleMovimiento d : listaDetalle) {
                 if (d.getIdProducto() == idProd) {

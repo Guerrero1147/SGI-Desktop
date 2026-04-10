@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+<?import java.lang.String?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.sgi.sgi.desktop.UsuariosController"
+            style="-fx-background-color: #1a1a2e;">
+    <stylesheets>
+        <String fx:value="/com/sgi/sgi/desktop/estilo.css"/>
+    </stylesheets>
+
+    <top>
+        <VBox style="-fx-background-color: #1a1a2e; -fx-padding: 25 25 10 25;" spacing="15">
+
+            <Label text="Gestión de Usuarios"
+                   style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <TextField fx:id="txtBuscar"
+                           promptText="🔍 Buscar por nombre, username o rol..."
+                           prefWidth="380"
+                           onKeyReleased="#buscarUsuario"
+                           style="-fx-background-color: #0f3460; -fx-text-fill: white;
+                                  -fx-prompt-text-fill: #546e7a; -fx-background-radius: 6;
+                                  -fx-padding: 10; -fx-font-size: 13px;
+                                  -fx-border-color: #1565c0; -fx-border-radius: 6;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="➕  Agregar Usuario" onAction="#abrirFormularioAgregar"
+                        style="-fx-background-color: #1565c0; -fx-text-fill: white;
+                               -fx-font-size: 13px; -fx-padding: 10 20 10 20;
+                               -fx-background-radius: 6; -fx-cursor: hand;"/>
+                <Button text="🔄  Actualizar" onAction="#cargarUsuarios"
+                        style="-fx-background-color: #0f3460; -fx-text-fill: #90caf9;
+                               -fx-font-size: 13px; -fx-padding: 10 20 10 20;
+                               -fx-background-radius: 6; -fx-cursor: hand;
+                               -fx-border-color: #1565c0; -fx-border-radius: 6;"/>
+            </HBox>
+
+            <Label fx:id="lblMensaje" text=""
+                   style="-fx-font-size: 12px; -fx-text-fill: #66bb6a;"/>
+        </VBox>
+    </top>
+
+    <!-- TABLA -->
+    <center>
+        <VBox style="-fx-padding: 0 25 25 25; -fx-background-color: #1a1a2e;">
+            <TableView fx:id="tablaUsuarios" VBox.vgrow="ALWAYS"
+                       style="-fx-background-color: #0f3460; -fx-background-radius: 8;
+                              -fx-border-color: #1565c0; -fx-border-radius: 8;">
+                <columns>
+                    <TableColumn fx:id="colId" text="#" prefWidth="50"
+                                 style="-fx-background-color: #1565c0; -fx-font-weight: bold;"/>
+                    <TableColumn fx:id="colNombre" text="Nombre" prefWidth="180"
+                                 style="-fx-background-color: #1565c0; -fx-font-weight: bold;"/>
+                    <TableColumn fx:id="colUsername" text="Username" prefWidth="140"
+                                 style="-fx-background-color: #1565c0; -fx-font-weight: bold;"/>
+                    <TableColumn fx:id="colRol" text="Rol" prefWidth="110"
+                                 style="-fx-background-color: #1565c0; -fx-font-weight: bold;"/>
+                    <TableColumn fx:id="colFecha" text="Fecha Creación" prefWidth="160"
+                                 style="-fx-background-color: #1565c0; -fx-font-weight: bold;"/>
+                    <TableColumn fx:id="colAcciones" text="Acciones" prefWidth="160"
+                                 style="-fx-background-color: #1565c0; -fx-font-weight: bold;"/>
+                </columns>
+                <placeholder>
+                    <Label text="No hay usuarios registrados"
+                           style="-fx-text-fill: #546e7a; -fx-font-size: 14px;"/>
+                </placeholder>
+            </TableView>
+        </VBox>
+    </center>
+
+    <!-- FORMULARIO LATERAL -->
+    <right>
+        <VBox fx:id="panelFormulario" spacing="12" prefWidth="300" minWidth="300"
+              style="-fx-background-color: #16213e; -fx-padding: 25;"
+              visible="false" managed="false">
+
+            <Label fx:id="lblTituloForm" text="Agregar Usuario"
+                   style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+
+            <Label text="Nombre completo *" style="-fx-text-fill: #90caf9; -fx-font-size: 12px;"/>
+            <TextField fx:id="txtNombre" promptText="Nombre del usuario"
+                       style="-fx-background-color: #0f3460; -fx-text-fill: white;
+                              -fx-prompt-text-fill: #546e7a; -fx-background-radius: 6;
+                              -fx-padding: 8; -fx-border-color: #1565c0; -fx-border-radius: 6;"/>
+
+            <Label text="Username *" style="-fx-text-fill: #90caf9; -fx-font-size: 12px;"/>
+            <TextField fx:id="txtUsername" promptText="Nombre de usuario para login"
+                       style="-fx-background-color: #0f3460; -fx-text-fill: white;
+                              -fx-prompt-text-fill: #546e7a; -fx-background-radius: 6;
+                              -fx-padding: 8; -fx-border-color: #1565c0; -fx-border-radius: 6;"/>
+
+            <Label text="Contraseña *" style="-fx-text-fill: #90caf9; -fx-font-size: 12px;"/>
+            <PasswordField fx:id="txtPassword" promptText="Contraseña"
+                           style="-fx-background-color: #0f3460; -fx-text-fill: white;
+                                  -fx-prompt-text-fill: #546e7a; -fx-background-radius: 6;
+                                  -fx-padding: 8; -fx-border-color: #1565c0; -fx-border-radius: 6;"/>
+
+            <Label text="Confirmar contraseña *" style="-fx-text-fill: #90caf9; -fx-font-size: 12px;"/>
+            <PasswordField fx:id="txtConfirmarPassword" promptText="Confirmar contraseña"
+                           style="-fx-background-color: #0f3460; -fx-text-fill: white;
+                                  -fx-prompt-text-fill: #546e7a; -fx-background-radius: 6;
+                                  -fx-padding: 8; -fx-border-color: #1565c0; -fx-border-radius: 6;"/>
+
+            <Label text="Rol *" style="-fx-text-fill: #90caf9; -fx-font-size: 12px;"/>
+            <ComboBox fx:id="cmbRol" maxWidth="Infinity"
+                      promptText="Seleccionar rol..."
+                      style="-fx-background-color: #0f3460; -fx-text-fill: white;
+                             -fx-border-color: #1565c0; -fx-border-radius: 6;"/>
+
+            <Label fx:id="lblErrorForm" text=""
+                   style="-fx-text-fill: #ef5350; -fx-font-size: 12px; -fx-wrap-text: true;"/>
+
+            <HBox spacing="10">
+                <Button text="💾  Guardar" onAction="#guardarUsuario"
+                        HBox.hgrow="ALWAYS" maxWidth="Infinity"
+                        style="-fx-background-color: #1565c0; -fx-text-fill: white;
+                               -fx-font-size: 13px; -fx-padding: 10;
+                               -fx-background-radius: 6; -fx-cursor: hand;"/>
+                <Button text="✖  Cancelar" onAction="#cerrarFormulario"
+                        HBox.hgrow="ALWAYS" maxWidth="Infinity"
+                        style="-fx-background-color: #b71c1c; -fx-text-fill: white;
+                               -fx-font-size: 13px; -fx-padding: 10;
+                               -fx-background-radius: 6; -fx-cursor: hand;"/>
+            </HBox>
+
+        </VBox>
+    </right>
+
+</BorderPane>
