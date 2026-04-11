@@ -50,6 +50,11 @@
                                -fx-font-size: 13px; -fx-padding: 10 20 10 20;
                                -fx-background-radius: 6; -fx-cursor: hand;
                                -fx-border-color: #1565c0; -fx-border-radius: 6;"/>
+
+                <Button text="📊  Corte de Caja" onAction="#mostrarCorteDeCaja"
+                        style="-fx-background-color: #1b5e20; -fx-text-fill: white;
+                               -fx-font-size: 13px; -fx-padding: 10 20 10 20;
+                               -fx-background-radius: 6; -fx-cursor: hand;"/>
             </HBox>
 
             <Label fx:id="lblMensaje" text=""

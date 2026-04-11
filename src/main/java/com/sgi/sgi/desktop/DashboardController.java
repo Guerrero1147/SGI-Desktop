@@ -177,8 +177,8 @@ public class DashboardController implements Initializable{
             tarjetas.getChildren().addAll(
                 crearTarjeta("📦 Total Productos", String.valueOf(totalProductos), "productos registrados", "white",   "#90caf9"),
                 crearTarjeta("⚠️Stock Bajo",      String.valueOf(stockBajo),      "productos por agotarse","#ff7043","#ffb74d"),
-                crearTarjeta("📥 Entradas Hoy",    String.valueOf(entradasHoy),    "movimientos de entrada","#66bb6a","#81c784"),
-                crearTarjeta("📤 Salidas Hoy",     String.valueOf(salidasHoy),     "movimientos de salida", "#ef5350","#ef9a9a")
+                crearTarjeta("📥 Entradas",    String.valueOf(entradasHoy),    "movimientos de entrada","#66bb6a","#81c784"),
+                crearTarjeta("📤 Salidas",     String.valueOf(salidasHoy),     "movimientos de salida", "#ef5350","#ef9a9a")
             );
             for (javafx.scene.Node n : tarjetas.getChildren())
                 HBox.setHgrow(n, Priority.ALWAYS);
@@ -272,33 +272,114 @@ public class DashboardController implements Initializable{
             filaGrafica.getChildren().addAll(graficaBox, stockBox);
             vbox.getChildren().add(filaGrafica);
 
-            // ── Tabla movimientos ───────────────────────────────────────────
+            // ── Fila inferior: Movimientos (60%) + Cortes de Caja (40%) ────
+            HBox filaInferior = new HBox(15);
+            filaInferior.setFillHeight(true);
+
+            // ── Últimos Movimientos ─────────────────────────────────────────
             VBox tablaBox = new VBox(10);
             tablaBox.setStyle("-fx-background-color: #16213e; -fx-background-radius: 10; -fx-padding: 20;");
+            HBox.setHgrow(tablaBox, Priority.ALWAYS);
 
             Label lblMovimientos = new Label("Últimos Movimientos");
             lblMovimientos.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;");
 
             TableView<MovimientoResumen> tabla = new TableView<>();
-            tabla.setPrefHeight(200);
+            tabla.setPrefHeight(220);
             tabla.setStyle("-fx-background-color: #0f3460; -fx-border-color: #1565c0;");
 
             TableColumn<MovimientoResumen, String>  cFecha  = new TableColumn<>("Fecha");
             TableColumn<MovimientoResumen, String>  cTipo   = new TableColumn<>("Tipo");
             TableColumn<MovimientoResumen, String>  cUsr    = new TableColumn<>("Usuario");
-            TableColumn<MovimientoResumen, Integer> cTot    = new TableColumn<>("Total Productos");
+            TableColumn<MovimientoResumen, Integer> cTot    = new TableColumn<>("Total Prods.");
             TableColumn<MovimientoResumen, String>  cObs    = new TableColumn<>("Observación");
-            cFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));          cFecha.setPrefWidth(160);
-            cTipo .setCellValueFactory(new PropertyValueFactory<>("tipo"));           cTipo .setPrefWidth(90);
-            cUsr  .setCellValueFactory(new PropertyValueFactory<>("usuario"));        cUsr  .setPrefWidth(130);
-            cTot  .setCellValueFactory(new PropertyValueFactory<>("totalProductos")); cTot  .setPrefWidth(130);
-            cObs  .setCellValueFactory(new PropertyValueFactory<>("observacion"));    cObs  .setPrefWidth(200);
+            cFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));          cFecha.setPrefWidth(145);
+            cTipo .setCellValueFactory(new PropertyValueFactory<>("tipo"));           cTipo .setPrefWidth(80);
+            cUsr  .setCellValueFactory(new PropertyValueFactory<>("usuario"));        cUsr  .setPrefWidth(110);
+            cTot  .setCellValueFactory(new PropertyValueFactory<>("totalProductos")); cTot  .setPrefWidth(100);
+            cObs  .setCellValueFactory(new PropertyValueFactory<>("observacion"));    cObs  .setPrefWidth(160);
+
+            // Color ENTRADA/SALIDA
+            cTipo.setCellFactory(col -> new TableCell<>() {
+                @Override protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) { setText(null); setStyle(""); }
+                    else {
+                        setText(item);
+                        setStyle("ENTRADA".equals(item)
+                            ? "-fx-text-fill: #66bb6a; -fx-font-weight: bold;"
+                            : "-fx-text-fill: #ef5350; -fx-font-weight: bold;");
+                    }
+                }
+            });
+
             tabla.getColumns().addAll(cFecha, cTipo, cUsr, cTot, cObs);
             tabla.setPlaceholder(new Label("No hay movimientos registrados aún"));
             cargarMovimientosTabla(tabla);
 
             tablaBox.getChildren().addAll(lblMovimientos, tabla);
-            vbox.getChildren().add(tablaBox);
+
+            // ── Cortes de Caja ──────────────────────────────────────────────
+            VBox cortesBox = new VBox(10);
+            cortesBox.setStyle("-fx-background-color: #16213e; -fx-background-radius: 10; -fx-padding: 20;");
+            cortesBox.setPrefWidth(370);
+            cortesBox.setMinWidth(340);
+
+            Label lblCortes = new Label("📊 Cortes de Caja");
+            lblCortes.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;");
+
+            TableView<CorteDeCaja> tablaCortes = new TableView<>();
+            tablaCortes.setPrefHeight(220);
+            tablaCortes.setStyle("-fx-background-color: #0f3460; -fx-border-color: #1565c0;");
+            VBox.setVgrow(tablaCortes, Priority.ALWAYS);
+
+            TableColumn<CorteDeCaja, String> ccFecha   = new TableColumn<>("Fecha");
+            TableColumn<CorteDeCaja, String> ccBalance = new TableColumn<>("Balance Neto");
+            TableColumn<CorteDeCaja, Void>   ccTicket  = new TableColumn<>("Ticket");
+
+            ccFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
+            ccFecha.setPrefWidth(100);
+
+            ccBalance.setCellValueFactory(new PropertyValueFactory<>("balanceNetoStr"));
+            ccBalance.setPrefWidth(120);
+            ccBalance.setCellFactory(col -> new TableCell<>() {
+                @Override protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) { setText(null); setStyle(""); }
+                    else {
+                        setText(item);
+                        boolean positivo = !item.startsWith("-");
+                        setStyle(positivo
+                            ? "-fx-text-fill: #66bb6a; -fx-font-weight: bold;"
+                            : "-fx-text-fill: #ef5350; -fx-font-weight: bold;");
+                    }
+                }
+            });
+
+            ccTicket.setPrefWidth(80);
+            ccTicket.setCellFactory(col -> new TableCell<>() {
+                private final Button btn = new Button("🎫 Ver");
+                { btn.setStyle("-fx-background-color: #1565c0; -fx-text-fill: white;" +
+                               "-fx-background-radius: 4; -fx-cursor: hand; -fx-font-size: 11px;");
+                  btn.setOnAction(e -> {
+                      CorteDeCaja c = getTableView().getItems().get(getIndex());
+                      mostrarTicketCorte(c);
+                  });
+                }
+                @Override protected void updateItem(Void item, boolean empty) {
+                    super.updateItem(item, empty);
+                    setGraphic(empty ? null : btn);
+                }
+            });
+
+            tablaCortes.getColumns().addAll(ccFecha, ccBalance, ccTicket);
+            tablaCortes.setPlaceholder(new Label("Sin cortes de caja registrados"));
+            cargarCortesTabla(tablaCortes);
+
+            cortesBox.getChildren().addAll(lblCortes, tablaCortes);
+
+            filaInferior.getChildren().addAll(tablaBox, cortesBox);
+            vbox.getChildren().add(filaInferior);
 
             scrollPane.setContent(vbox);
             contenidoPrincipal.getChildren().clear();
@@ -361,6 +442,102 @@ public class DashboardController implements Initializable{
             nuevoStage.setResizable(false);
             nuevoStage.show();
         } catch (Exception e) { e.printStackTrace(); }
+    }
+
+    private void cargarCortesTabla(TableView<CorteDeCaja> tabla) {
+        try {
+            Connection con = Conexion.getConexion();
+            ObservableList<CorteDeCaja> lista = FXCollections.observableArrayList();
+            ResultSet rs = con.createStatement().executeQuery(
+                "SELECT DATE(fecha) AS dia, " +
+                "  SUM(CASE WHEN tipo='ENTRADA' THEN total_valor ELSE 0 END) AS entradas, " +
+                "  SUM(CASE WHEN tipo='SALIDA'  THEN total_valor ELSE 0 END) AS salidas " +
+                "FROM vista_movimientos " +
+                "GROUP BY DATE(fecha) " +
+                "ORDER BY dia DESC " +
+                "LIMIT 10");
+            while (rs.next()) {
+                double ent = rs.getDouble("entradas");
+                double sal = rs.getDouble("salidas");
+                lista.add(new CorteDeCaja(rs.getString("dia"), ent, sal));
+            }
+            tabla.setItems(lista);
+            rs.close();
+        } catch (Exception e) { e.printStackTrace(); }
+    }
+
+    private void mostrarTicketCorte(CorteDeCaja c) {
+        try {
+            Connection con = Conexion.getConexion();
+            // Top productos del día
+            java.sql.PreparedStatement psTop = con.prepareStatement(
+                "SELECT p.nombre, m.tipo, SUM(dm.cantidad) AS total_cant, " +
+                "       SUM(dm.cantidad * dm.precio_unitario) AS subtotal " +
+                "FROM movimientos m " +
+                "JOIN detalle_movimientos dm ON m.id_movimiento = dm.id_movimiento " +
+                "JOIN productos p ON dm.id_producto = p.id_producto " +
+                "WHERE DATE(m.fecha) = ? " +
+                "GROUP BY p.nombre, m.tipo " +
+                "ORDER BY total_cant DESC LIMIT 8");
+            psTop.setString(1, c.getFecha());
+            ResultSet rsTop = psTop.executeQuery();
+            StringBuilder sbTop = new StringBuilder();
+            while (rsTop.next())
+                sbTop.append(String.format("  %-22s %-8s %4d pzs  $%,.2f%n",
+                    rsTop.getString("nombre"), rsTop.getString("tipo"),
+                    rsTop.getInt("total_cant"), rsTop.getDouble("subtotal")));
+            rsTop.close(); psTop.close();
+
+            String linea = "─".repeat(46);
+            double balance = c.getBalanceNeto();
+            String ticket = String.format(
+                "%s%n  📊 CORTE DE CAJA — %s%n%s%n%n" +
+                "  📥 Compras (Entradas)   $%,.2f%n" +
+                "  📤 Ventas  (Salidas)    $%,.2f%n" +
+                "%s%n" +
+                "  💰 Balance neto         $%,.2f%n" +
+                "%s%n%n" +
+                "  DETALLE POR PRODUCTO%n%s",
+                linea, c.getFecha(), linea,
+                c.getTotalEntradas(), c.getTotalSalidas(),
+                linea, balance, linea,
+                sbTop.length() > 0 ? sbTop : "  Sin detalle disponible.\n");
+
+            javafx.scene.control.TextArea txt = new javafx.scene.control.TextArea(ticket);
+            txt.setEditable(false);
+            txt.setPrefSize(460, 340);
+            txt.setStyle("-fx-font-family: 'Courier New', monospace; -fx-font-size: 12px;" +
+                         "-fx-background-color: #1a1a2e; -fx-text-fill: #e0e0e0;" +
+                         "-fx-control-inner-background: #1a1a2e;");
+
+            Dialog<Void> d = new Dialog<>();
+            d.setTitle("Ticket — " + c.getFecha());
+            d.setHeaderText(null);
+            d.getDialogPane().setContent(txt);
+            d.getDialogPane().setStyle("-fx-background-color: #1a1a2e;");
+            d.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+            d.showAndWait();
+        } catch (Exception e) { e.printStackTrace(); }
+    }
+
+    public static class CorteDeCaja {
+        private final String fecha;
+        private final double totalEntradas, totalSalidas;
+
+        public CorteDeCaja(String fecha, double totalEntradas, double totalSalidas) {
+            this.fecha = fecha;
+            this.totalEntradas = totalEntradas;
+            this.totalSalidas  = totalSalidas;
+        }
+
+        public String getFecha()          { return fecha; }
+        public double getTotalEntradas()  { return totalEntradas; }
+        public double getTotalSalidas()   { return totalSalidas; }
+        public double getBalanceNeto()    { return totalSalidas - totalEntradas; }
+        public String getBalanceNetoStr() {
+            double b = getBalanceNeto();
+            return String.format("%s$%,.2f", b < 0 ? "-" : "+", Math.abs(b));
+        }
     }
 
     public static class MovimientoResumen {

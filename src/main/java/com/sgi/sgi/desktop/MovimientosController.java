@@ -19,6 +19,8 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.control.ButtonBar;
+import javafx.geometry.Insets;
 /**
  *
  * @author erice
@@ -474,6 +476,161 @@ public class MovimientosController implements Initializable {
 
         } catch (Exception e) {
             mostrarMensaje("❌ Error al eliminar: " + e.getMessage(), false);
+            e.printStackTrace();
+        }
+    }
+
+    // ── Corte de Caja ────────────────────────────────────────────────────────
+
+    @FXML
+    private void mostrarCorteDeCaja() {
+        // --- Diálogo para elegir la fecha ---
+        Dialog<java.time.LocalDate> dialogFecha = new Dialog<>();
+        dialogFecha.setTitle("Corte de Caja");
+        dialogFecha.setHeaderText("Selecciona la fecha del corte");
+
+        ButtonType btnGenerar = new ButtonType("Generar Corte", ButtonBar.ButtonData.OK_DONE);
+        dialogFecha.getDialogPane().getButtonTypes().addAll(btnGenerar, ButtonType.CANCEL);
+
+        javafx.scene.control.DatePicker datePicker = new javafx.scene.control.DatePicker(java.time.LocalDate.now());
+        datePicker.setStyle("-fx-font-size: 13px;");
+
+        javafx.scene.layout.VBox content = new javafx.scene.layout.VBox(10,
+            new Label("Fecha:"), datePicker);
+        content.setPadding(new javafx.geometry.Insets(10));
+        dialogFecha.getDialogPane().setContent(content);
+
+        dialogFecha.setResultConverter(btn ->
+            btn == btnGenerar ? datePicker.getValue() : null);
+
+        java.util.Optional<java.time.LocalDate> resultFecha = dialogFecha.showAndWait();
+        if (resultFecha.isEmpty() || resultFecha.get() == null) return;
+
+        java.time.LocalDate fecha = resultFecha.get();
+        generarCorteDeCaja(fecha);
+    }
+
+    private void generarCorteDeCaja(java.time.LocalDate fecha) {
+        try {
+            Connection con = Conexion.getConexion();
+            String fechaStr = fecha.toString(); // yyyy-MM-dd
+
+            // Totales de ENTRADA del día
+            PreparedStatement psEnt = con.prepareStatement(
+                "SELECT COUNT(*) AS num_mov, " +
+                "       COALESCE(SUM(dm.cantidad), 0)              AS total_piezas, " +
+                "       COALESCE(SUM(dm.cantidad * dm.precio_unitario), 0) AS total_valor " +
+                "FROM movimientos m " +
+                "JOIN detalle_movimientos dm ON m.id_movimiento = dm.id_movimiento " +
+                "WHERE m.tipo = 'ENTRADA' AND DATE(m.fecha) = ?");
+            psEnt.setString(1, fechaStr);
+            ResultSet rsEnt = psEnt.executeQuery();
+            int    entMovimientos = 0;
+            int    entPiezas      = 0;
+            double entValor       = 0;
+            if (rsEnt.next()) {
+                entMovimientos = rsEnt.getInt("num_mov");
+                entPiezas      = rsEnt.getInt("total_piezas");
+                entValor       = rsEnt.getDouble("total_valor");
+            }
+            rsEnt.close(); psEnt.close();
+
+            // Totales de SALIDA del día
+            PreparedStatement psSal = con.prepareStatement(
+                "SELECT COUNT(*) AS num_mov, " +
+                "       COALESCE(SUM(dm.cantidad), 0)              AS total_piezas, " +
+                "       COALESCE(SUM(dm.cantidad * dm.precio_unitario), 0) AS total_valor " +
+                "FROM movimientos m " +
+                "JOIN detalle_movimientos dm ON m.id_movimiento = dm.id_movimiento " +
+                "WHERE m.tipo = 'SALIDA' AND DATE(m.fecha) = ?");
+            psSal.setString(1, fechaStr);
+            ResultSet rsSal = psSal.executeQuery();
+            int    salMovimientos = 0;
+            int    salPiezas      = 0;
+            double salValor       = 0;
+            if (rsSal.next()) {
+                salMovimientos = rsSal.getInt("num_mov");
+                salPiezas      = rsSal.getInt("total_piezas");
+                salValor       = rsSal.getDouble("total_valor");
+            }
+            rsSal.close(); psSal.close();
+
+            // Top 5 productos más movidos del día
+            PreparedStatement psTop = con.prepareStatement(
+                "SELECT p.nombre, m.tipo, SUM(dm.cantidad) AS total_cant " +
+                "FROM movimientos m " +
+                "JOIN detalle_movimientos dm ON m.id_movimiento = dm.id_movimiento " +
+                "JOIN productos p ON dm.id_producto = p.id_producto " +
+                "WHERE DATE(m.fecha) = ? " +
+                "GROUP BY p.nombre, m.tipo " +
+                "ORDER BY total_cant DESC " +
+                "LIMIT 5");
+            psTop.setString(1, fechaStr);
+            ResultSet rsTop = psTop.executeQuery();
+            StringBuilder sbTop = new StringBuilder();
+            while (rsTop.next()) {
+                sbTop.append(String.format("  • %-25s %-8s %d pzs%n",
+                    rsTop.getString("nombre"),
+                    rsTop.getString("tipo"),
+                    rsTop.getInt("total_cant")));
+            }
+            rsTop.close(); psTop.close();
+
+            // Construir el resumen
+            double balance = salValor - entValor;
+            String linea = "─".repeat(44);
+            String resumen = String.format(
+                "%s%n" +
+                "  📅 CORTE DE CAJA — %s%n" +
+                "%s%n%n" +
+
+                "  📥 ENTRADAS (Compras)%n" +
+                "     Movimientos : %d%n" +
+                "     Piezas      : %d%n" +
+                "     Total       : $%,.2f%n%n" +
+
+                "  📤 SALIDAS (Ventas)%n" +
+                "     Movimientos : %d%n" +
+                "     Piezas      : %d%n" +
+                "     Total       : $%,.2f%n%n" +
+
+                "%s%n" +
+                "  💰 BALANCE NETO (Ventas − Compras)%n" +
+                "     $%,.2f%n" +
+                "%s%n%n" +
+
+                "  🏆 PRODUCTOS MÁS MOVIDOS DEL DÍA%n" +
+                "%s",
+                linea, fecha, linea,
+                entMovimientos, entPiezas, entValor,
+                salMovimientos, salPiezas, salValor,
+                linea,
+                balance,
+                linea,
+                sbTop.length() > 0 ? sbTop.toString() : "  Sin movimientos en esta fecha.\n"
+            );
+
+            // Mostrar en un diálogo estilizado con área de texto
+            Dialog<Void> dialogCorte = new Dialog<>();
+            dialogCorte.setTitle("Corte de Caja — " + fecha);
+            dialogCorte.setHeaderText(null);
+            dialogCorte.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+
+            javafx.scene.control.TextArea txtResumen = new javafx.scene.control.TextArea(resumen);
+            txtResumen.setEditable(false);
+            txtResumen.setStyle(
+                "-fx-font-family: 'Courier New', monospace; -fx-font-size: 13px;" +
+                "-fx-background-color: #1a1a2e; -fx-text-fill: #e0e0e0;" +
+                "-fx-control-inner-background: #1a1a2e;");
+            txtResumen.setPrefSize(480, 370);
+            txtResumen.setWrapText(false);
+
+            dialogCorte.getDialogPane().setContent(txtResumen);
+            dialogCorte.getDialogPane().setStyle("-fx-background-color: #1a1a2e;");
+            dialogCorte.showAndWait();
+
+        } catch (Exception e) {
+            mostrarMensaje("❌ Error al generar el corte: " + e.getMessage(), false);
             e.printStackTrace();
         }
     }
