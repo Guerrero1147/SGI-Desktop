@@ -1,0 +1,6 @@
+# Copia este archivo como config.properties y llena tus datos
+db.host=tu-host.aivencloud.com
+db.port=12345
+db.name=nombre_db
+db.user=tu_usuario
+db.password=tu_password
