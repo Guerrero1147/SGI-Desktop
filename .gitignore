@@ -12,3 +12,5 @@ src/config.properties
 # Windows
 Thumbs.db
 Desktop.ini
+iniciador/
+target/
