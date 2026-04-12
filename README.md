@@ -105,14 +105,14 @@ SGI-Desktop/
 | **Dashboard** | Resumen general y corte de caja |
 | **Productos** | Alta, edición y consulta de productos |
 | **Proveedores** | Gestión de proveedores y sus productos |
-| **Movimientos** | Registro de entradas y salidas de inventario |
+| **Movimientos** | Registro de entradas o salidas de inventario y corte de caja |
 | **Usuarios** | Administración de usuarios del sistema |
 
 ---
 
 ## 🛠️ Tecnologías utilizadas
 
-- **Java 21** — Lenguaje principal
+- **Java 23** — Lenguaje principal
 - **JavaFX 21** — Interfaz gráfica
 - **CSS** — Estilos de la interfaz
 - **MySQL 8.0** — Base de datos
