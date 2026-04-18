@@ -1,40 +1,120 @@
 # SGI-Desktop 🖥️
 
-Aplicación de escritorio para gestionar inventario, desarrollada 
-en Java con JavaFX y base de datos MySQL.
+Aplicación de escritorio para la gestión de inventario, desarrollada en Java con JavaFX y base de datos MySQL.
 
-## ⚙️ Requisitos
-- Java JDK 23 (En caso de no tener ese JDK ir a las líneas: 10 y 11 del pom.xml y poner la versión del JDK que usted disponga.)
-- Apache NetBeans IDE 20
-- MySQL Server 8.0
-- MySQL Workbench (opcional, para ver la BD)
+## 📋 Requisitos
 
-## 🚀 Cómo configurar el proyecto
+- **Java JDK 21 o superior** — [Descargar aquí](https://www.oracle.com/java/technologies/downloads/)
+- **Apache Maven 3.8+** — [Descargar aquí](https://maven.apache.org/download.cgi)
+- **MySQL Server 8.0+** — [Descargar aquí](https://dev.mysql.com/downloads/mysql/)
+- **Apache NetBeans IDE 20** (recomendado) — [Descargar aquí](https://netbeans.apache.org/front/main/download/)
+- MySQL Workbench *(opcional, para visualizar la BD)*
+
+> ⚠️ Si usas una versión de JDK distinta, cambia las líneas `<source>` y `<target>` en el `pom.xml` para que coincidan con la tuya.
+
+---
+
+## 🚀 Instalación y configuración
 
 ### 1. Clonar el repositorio
-En NetBeans: Team → Git → Clone
+
+**Desde NetBeans:**
+```
+Team → Git → Clone
 URL: https://github.com/Guerrero1147/SGI-Desktop.git
+```
+
+**Desde la terminal:**
+```bash
+git clone https://github.com/Guerrero1147/SGI-Desktop.git
+cd SGI-Desktop
+```
+
+---
 
 ### 2. Configurar la base de datos
-- Abre MySQL Workbench
-- Ve a Server → Data Import
-- Selecciona el archivo: database/database.sql
-- Ejecuta la importación
 
-### 3. Configurar la conexión
-- Ve a la clase Conexion.java
-- Cambia el usuario y contraseña por los tuyos de MySQL
+1. Abre **MySQL Workbench** (o cualquier cliente MySQL).
+2. Importa el script de la base de datos:
+   ```sql
+   source database/database.sql
+   ```
+   O en MySQL Workbench: **Server → Data Import → Import from Self-Contained File** y selecciona `database/database.sql`.
+3. Esto creará automáticamente la base de datos `sgi_desktop` con todas las tablas necesarias.
+
+---
+
+### 3. Configurar la conexión a la base de datos
+
+1. Copia el archivo de ejemplo de configuración:
+   ```bash
+   cp config.properties.example src/main/resources/config.properties
+   ```
+2. Edita `src/main/resources/config.properties` con los datos de tu servidor MySQL:
+   ```properties
+   db.host=localhost
+   db.port=3306
+   db.name=sgi_desktop
+   db.user=tu_usuario
+   db.password=tu_contraseña
+   ```
+
+> 🔒 El archivo `config.properties` **no se sube al repositorio** (está en `.gitignore`) para proteger tus credenciales.
+
+---
 
 ### 4. Ejecutar el proyecto
-- Abre el proyecto en NetBeans
-- Click derecho en proyecto y Run maven
-- Click en Goals
-- En Goals poner (javafx:run) y apretar go
+
+**Desde NetBeans:**
+1. Abre el proyecto en NetBeans.
+2. Click derecho en el proyecto → **Run Maven** → **Goals**.
+3. En el campo *Goals* escribe: `javafx:run` y presiona **Go**.
+
+**Desde la terminal:**
+```bash
+mvn javafx:run
+```
+
+---
 
 ## 📁 Estructura del proyecto
-- src/ → Código fuente Java y archivos FXML
-- database/ → Script SQL para crear la base de datos
 
-## ⚠️ Notas
-- El proyecto aún está en desarrollo
-- Si hay cambios en la BD, se actualizará el archivo database.sql
+```
+SGI-Desktop/
+├── src/
+│   └── main/
+│       ├── java/com/sgi/
+│       │   ├── conexion/         # Clase de conexión a la BD
+│       │   └── sgi/desktop/      # Controladores y lógica de la app
+│       └── resources/com/sgi/sgi/desktop/
+│           ├── *.fxml            # Vistas de cada módulo
+│           └── estilo.css        # Estilos de la interfaz
+├── database/
+│   └── database.sql              # Script para crear la base de datos
+├── config.properties.example     # Plantilla de configuración
+└── pom.xml                       # Dependencias y build de Maven
+```
+
+---
+
+## 🧩 Módulos de la aplicación
+
+| Módulo | Descripción |
+|---|---|
+| **Login** | Autenticación de usuarios |
+| **Dashboard** | Resumen general y corte de caja |
+| **Productos** | Alta, edición y consulta de productos |
+| **Proveedores** | Gestión de proveedores y sus productos |
+| **Movimientos** | Registro de entradas o salidas de inventario y corte de caja |
+| **Usuarios** | Administración de usuarios del sistema |
+
+---
+
+## 🛠️ Tecnologías utilizadas
+
+- **Java 23** — Lenguaje principal
+- **JavaFX 21** — Interfaz gráfica
+- **CSS** — Estilos de la interfaz
+- **MySQL 8.0** — Base de datos
+- **Maven** — Gestión de dependencias y build
+- **MySQL Connector/J 8.0.33** — Driver JDBC para MySQL
