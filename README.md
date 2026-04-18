@@ -84,15 +84,17 @@ SGI-Desktop/
 ├── src/
 │   └── main/
 │       ├── java/com/sgi/
-│       │   ├── conexion/         # Clase de conexión a la BD
-│       │   └── sgi/desktop/      # Controladores y lógica de la app
+│       │   ├── conexion/               # Clase de conexión a la BD
+│       │   └── sgi/desktop/            # Controladores y lógica de la app
+│       │       ├── ConfirmDialog.java  # Diálogos de confirmación estilizados
+│       │       └── *Controller.java    # Controladores de cada módulo
 │       └── resources/com/sgi/sgi/desktop/
-│           ├── *.fxml            # Vistas de cada módulo
-│           └── estilo.css        # Estilos de la interfaz
+│           ├── *.fxml                  # Vistas de cada módulo
+│           └── estilo.css              # Design system (tema oscuro)
 ├── database/
-│   └── database.sql              # Script para crear la base de datos
-├── config.properties.example     # Plantilla de configuración
-└── pom.xml                       # Dependencias y build de Maven
+│   └── database.sql                    # Script para crear la base de datos
+├── config.properties.example           # Plantilla de configuración
+└── pom.xml                             # Dependencias y build de Maven
 ```
 
 ---
@@ -105,16 +107,24 @@ SGI-Desktop/
 | **Dashboard** | Resumen general y corte de caja |
 | **Productos** | Alta, edición y consulta de productos |
 | **Proveedores** | Gestión de proveedores y sus productos |
-| **Movimientos** | Registro de entradas o salidas de inventario y corte de caja |
+| **Movimientos** | Registro de entradas y salidas de inventario |
 | **Usuarios** | Administración de usuarios del sistema |
+
+---
+
+## 🎨 Diseño
+
+La interfaz utiliza un **tema oscuro** inspirado en la paleta del logo oficial de SGI. Todos los estilos están centralizados en `estilo.css`, que actúa como design system de la aplicación e incluye estilos para tablas, inputs, botones, sidebar, combo boxes, tooltips y scroll panes.
+
+Los diálogos de confirmación (guardar, eliminar, cerrar sesión y corte de caja) están implementados en `ConfirmDialog.java`, con estilos y colores consistentes al tema de la aplicación.
 
 ---
 
 ## 🛠️ Tecnologías utilizadas
 
-- **Java 23** — Lenguaje principal
+- **Java 21** — Lenguaje principal
 - **JavaFX 21** — Interfaz gráfica
-- **CSS** — Estilos de la interfaz
+- **CSS** — Design system y estilos de la interfaz
 - **MySQL 8.0** — Base de datos
 - **Maven** — Gestión de dependencias y build
 - **MySQL Connector/J 8.0.33** — Driver JDBC para MySQL
