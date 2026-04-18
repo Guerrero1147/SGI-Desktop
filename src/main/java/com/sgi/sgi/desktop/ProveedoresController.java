@@ -7,7 +7,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,13 +15,14 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 public class ProveedoresController implements Initializable {
 
-    @FXML private TableView<Proveedor> tablaProveedores;
+    @FXML private TableView<Proveedor>          tablaProveedores;
     @FXML private TableColumn<Proveedor, Integer> colId;
     @FXML private TableColumn<Proveedor, String>  colNombre;
     @FXML private TableColumn<Proveedor, String>  colTelefono;
@@ -31,11 +31,11 @@ public class ProveedoresController implements Initializable {
     @FXML private TableColumn<Proveedor, String>  colProductos;
     @FXML private TableColumn<Proveedor, Void>    colAcciones;
 
-    @FXML private TextField txtBuscar;
-    @FXML private Label     lblMensaje;
-    @FXML private VBox      panelFormulario;
-    @FXML private Label     lblTituloForm;
-    @FXML private Label     lblErrorForm;
+    @FXML private TextField  txtBuscar;
+    @FXML private Label      lblMensaje;
+    @FXML private VBox       panelFormulario;
+    @FXML private Label      lblTituloForm;
+    @FXML private Label      lblErrorForm;
 
     @FXML private TextField          txtNombre;
     @FXML private TextField          txtTelefono;
@@ -44,8 +44,8 @@ public class ProveedoresController implements Initializable {
     @FXML private ComboBox<ProductoItem> cmbProducto;
     @FXML private VBox               vboxProductosSeleccionados;
 
-    private final List<ProductoItem>      productosSeleccionados = new ArrayList<>();
-    private ObservableList<Proveedor>     listaProveedores       = FXCollections.observableArrayList();
+    private final List<ProductoItem>  productosSeleccionados = new ArrayList<>();
+    private ObservableList<Proveedor> listaProveedores       = FXCollections.observableArrayList();
     private int idProveedorEditando = -1;
 
     @Override
@@ -71,14 +71,14 @@ public class ProveedoresController implements Initializable {
             private final HBox   hbox        = new HBox(5, btnEditar, btnEliminar);
 
             {
-                btnEditar.setStyle("-fx-background-color: #1565c0; -fx-text-fill: white; " +
-                        "-fx-background-radius: 4; -fx-cursor: hand; -fx-font-size: 11px;");
-                btnEliminar.setStyle("-fx-background-color: #b71c1c; -fx-text-fill: white; " +
-                        "-fx-background-radius: 4; -fx-cursor: hand; -fx-font-size: 11px;");
-                btnEditar.setOnAction(e -> abrirFormularioEditar(
-                        getTableView().getItems().get(getIndex())));
-                btnEliminar.setOnAction(e -> confirmarEliminar(
-                        getTableView().getItems().get(getIndex())));
+                btnEditar.setStyle("-fx-background-color: rgba(245,166,35,0.12); -fx-text-fill: #f5a623; " +
+                        "-fx-font-size: 11px; -fx-background-radius: 4; -fx-cursor: hand; " +
+                        "-fx-padding: 4 10 4 10; -fx-border-color: rgba(0,212,245,0.25); -fx-border-radius: 4;");
+                btnEliminar.setStyle("-fx-background-color: rgba(239,68,68,0.1); -fx-text-fill: #ef4444; " +
+                        "-fx-font-size: 11px; -fx-background-radius: 4; -fx-cursor: hand; " +
+                        "-fx-padding: 4 10 4 10; -fx-border-color: rgba(239,68,68,0.25); -fx-border-radius: 4;");
+                btnEditar.setOnAction(e   -> abrirFormularioEditar(getTableView().getItems().get(getIndex())));
+                btnEliminar.setOnAction(e -> confirmarEliminar(getTableView().getItems().get(getIndex())));
             }
 
             @Override
@@ -96,14 +96,18 @@ public class ProveedoresController implements Initializable {
         try {
             Connection con = Conexion.getConexion();
             listaProveedores.clear();
+
+            // Muchos-a-muchos: join via tabla pivote proveedor_producto
             String sql =
                 "SELECT p.id_proveedor, p.nombre, p.telefono, p.email, p.direccion, " +
                 "GROUP_CONCAT(pr.nombre ORDER BY pr.nombre SEPARATOR ', ') AS productos_surtidos " +
                 "FROM proveedores p " +
-                "LEFT JOIN productos pr ON pr.id_proveedor = p.id_proveedor AND pr.activo = TRUE " +
+                "LEFT JOIN proveedor_producto pp ON pp.id_proveedor = p.id_proveedor " +
+                "LEFT JOIN productos pr ON pr.id_producto = pp.id_producto AND pr.activo = TRUE " +
                 "WHERE p.activo = TRUE " +
                 "GROUP BY p.id_proveedor, p.nombre, p.telefono, p.email, p.direccion " +
                 "ORDER BY p.nombre";
+
             ResultSet rs = con.createStatement().executeQuery(sql);
             while (rs.next()) {
                 String prod = rs.getString("productos_surtidos");
@@ -168,24 +172,30 @@ public class ProveedoresController implements Initializable {
         txtDireccion.setText(p.getDireccion());
         lblErrorForm.setText("");
 
-        // Cargar productos ya asignados
+        // Cargar productos ya asignados via tabla pivote proveedor_producto
         productosSeleccionados.clear();
         try {
             Connection con = Conexion.getConexion();
-            ResultSet rs = con.createStatement().executeQuery(
-                "SELECT id_producto, nombre FROM productos " +
-                "WHERE id_proveedor = " + idProveedorEditando + " AND activo = TRUE");
+            PreparedStatement ps = con.prepareStatement(
+                "SELECT pr.id_producto, pr.nombre " +
+                "FROM proveedor_producto pp " +
+                "JOIN productos pr ON pr.id_producto = pp.id_producto AND pr.activo = TRUE " +
+                "WHERE pp.id_proveedor = ? " +
+                "ORDER BY pr.nombre");
+            ps.setInt(1, idProveedorEditando);
+            ResultSet rs = ps.executeQuery();
             while (rs.next())
                 productosSeleccionados.add(
                     new ProductoItem(rs.getInt("id_producto"), rs.getString("nombre")));
             rs.close();
+            ps.close();
         } catch (Exception e) { e.printStackTrace(); }
 
-        refrescarVboxProductos();
+        refrescarChipsProductos();
         mostrarFormulario(true);
     }
 
-    // ── Productos seleccionados ─────────────────────────────────────────────
+    // ── Productos seleccionados (chips) ─────────────────────────────────────
 
     @FXML
     private void agregarProductoLista() {
@@ -202,37 +212,63 @@ public class ProveedoresController implements Initializable {
         productosSeleccionados.add(seleccionado);
         cmbProducto.setValue(null);
         lblErrorForm.setText("");
-        refrescarVboxProductos();
+        refrescarChipsProductos();
     }
 
-    private void refrescarVboxProductos() {
+    /**
+     * Redibuja el área de productos seleccionados usando chips/etiquetas
+     * con diseño consistente al resto de la aplicación.
+     */
+    private void refrescarChipsProductos() {
         vboxProductosSeleccionados.getChildren().clear();
-        if (productosSeleccionados.isEmpty()) return;
 
-        Label titulo = new Label("📦 Surte estos productos:");
-        titulo.setStyle("-fx-text-fill: #90caf9; -fx-font-size: 12px; -fx-font-weight: bold;");
+        if (productosSeleccionados.isEmpty()) {
+            Label vacio = new Label("Sin productos asociados");
+            vacio.setStyle("-fx-text-fill: #586b45; -fx-font-size: 11px; -fx-font-style: italic;");
+            vboxProductosSeleccionados.getChildren().add(vacio);
+            return;
+        }
+
+        // Encabezado dentro del contenedor
+        Label titulo = new Label("📦  Surte estos productos:");
+        titulo.setStyle("-fx-text-fill: #a3b891; -fx-font-size: 11px; -fx-font-weight: bold;");
         vboxProductosSeleccionados.getChildren().add(titulo);
 
+        // FlowPane para que los chips se ajusten en múltiples filas si es necesario
+        FlowPane flow = new FlowPane(6, 6);
+        flow.setPrefWrapLength(240);
+
         for (ProductoItem item : new ArrayList<>(productosSeleccionados)) {
-            HBox fila = new HBox(8);
-            fila.setAlignment(Pos.CENTER_LEFT);
+            HBox chip = new HBox(5);
+            chip.setAlignment(Pos.CENTER_LEFT);
+            chip.setStyle(
+                "-fx-background-color: rgba(0,212,245,0.10);" +
+                "-fx-border-color: rgba(0,212,245,0.28);" +
+                "-fx-border-radius: 20; -fx-background-radius: 20;" +
+                "-fx-padding: 4 6 4 10;"
+            );
 
-            Label lblNombre = new Label("• " + item.getNombre());
-            lblNombre.setStyle("-fx-text-fill: #cfd8dc; -fx-font-size: 12px;");
-            HBox.setHgrow(lblNombre, Priority.ALWAYS);
+            Label lblNombre = new Label(item.getNombre());
+            lblNombre.setStyle("-fx-text-fill: #f5a623; -fx-font-size: 12px;");
 
-            Button btnQuitar = new Button("✖");
-            btnQuitar.setStyle("-fx-background-color: #b71c1c; -fx-text-fill: white; " +
-                               "-fx-background-radius: 4; -fx-cursor: hand; " +
-                               "-fx-font-size: 10px; -fx-padding: 2 6 2 6;");
+            Button btnQuitar = new Button("✕");
+            btnQuitar.setStyle(
+                "-fx-background-color: transparent;" +
+                "-fx-text-fill: #ef4444;" +
+                "-fx-font-size: 11px; -fx-font-weight: bold;" +
+                "-fx-padding: 0 3 1 3;" +
+                "-fx-cursor: hand;"
+            );
             btnQuitar.setOnAction(e -> {
                 productosSeleccionados.remove(item);
-                refrescarVboxProductos();
+                refrescarChipsProductos();
             });
 
-            fila.getChildren().addAll(lblNombre, btnQuitar);
-            vboxProductosSeleccionados.getChildren().add(fila);
+            chip.getChildren().addAll(lblNombre, btnQuitar);
+            flow.getChildren().add(chip);
         }
+
+        vboxProductosSeleccionados.getChildren().add(flow);
     }
 
     // ── Guardar ─────────────────────────────────────────────────────────────
@@ -240,6 +276,17 @@ public class ProveedoresController implements Initializable {
     @FXML
     private void guardarProveedor() {
         if (!validarFormulario()) return;
+
+        String nombre = txtNombre.getText().trim();
+        boolean confirmado = ConfirmDialog.mostrar(
+            (idProveedorEditando == -1) ? "¿Agregar proveedor?" : "¿Guardar cambios?",
+            (idProveedorEditando == -1)
+                ? "Se registrará el nuevo proveedor \"" + nombre + "\"."
+                : "Se guardarán los cambios del proveedor \"" + nombre + "\".",
+            ConfirmDialog.Tipo.GUARDAR
+        );
+        if (!confirmado) return;
+
         try {
             Connection con = Conexion.getConexion();
             int idProveedor;
@@ -272,24 +319,23 @@ public class ProveedoresController implements Initializable {
                 mostrarMensaje("✅ Proveedor actualizado correctamente.", true);
             }
 
-            // Desasignar productos anteriores
-            PreparedStatement psReset = con.prepareStatement(
-                "UPDATE productos SET id_proveedor = NULL WHERE id_proveedor = ?");
-            psReset.setInt(1, idProveedor);
-            psReset.executeUpdate();
-            psReset.close();
+            // ── Muchos-a-muchos: borrar asociaciones previas e insertar las nuevas ──
+            PreparedStatement psDel = con.prepareStatement(
+                "DELETE FROM proveedor_producto WHERE id_proveedor = ?");
+            psDel.setInt(1, idProveedor);
+            psDel.executeUpdate();
+            psDel.close();
 
-            // Asignar productos seleccionados
             if (!productosSeleccionados.isEmpty()) {
-                PreparedStatement psAsignar = con.prepareStatement(
-                    "UPDATE productos SET id_proveedor = ? WHERE id_producto = ?");
+                PreparedStatement psIns = con.prepareStatement(
+                    "INSERT IGNORE INTO proveedor_producto (id_proveedor, id_producto) VALUES (?, ?)");
                 for (ProductoItem item : productosSeleccionados) {
-                    psAsignar.setInt(1, idProveedor);
-                    psAsignar.setInt(2, item.getIdProducto());
-                    psAsignar.addBatch();
+                    psIns.setInt(1, idProveedor);
+                    psIns.setInt(2, item.getIdProducto());
+                    psIns.addBatch();
                 }
-                psAsignar.executeBatch();
-                psAsignar.close();
+                psIns.executeBatch();
+                psIns.close();
             }
 
             cerrarFormulario();
@@ -304,25 +350,26 @@ public class ProveedoresController implements Initializable {
     // ── Eliminar ────────────────────────────────────────────────────────────
 
     private void confirmarEliminar(Proveedor p) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmar eliminación");
-        alert.setHeaderText("¿Eliminar proveedor?");
-        alert.setContentText("¿Estás seguro de eliminar \"" + p.getNombre() + "\"?\n" +
-                             "Los productos vinculados quedarán sin proveedor asignado.");
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK)
-            eliminarProveedor(p);
+        boolean confirmado = ConfirmDialog.mostrar(
+            "¿Eliminar proveedor?",
+            "Se eliminará \"" + p.getNombre() + "\" y sus\nasociaciones con productos.",
+            ConfirmDialog.Tipo.ELIMINAR
+        );
+        if (confirmado) eliminarProveedor(p);
     }
 
     private void eliminarProveedor(Proveedor p) {
         try {
             Connection con = Conexion.getConexion();
-            PreparedStatement psReset = con.prepareStatement(
-                "UPDATE productos SET id_proveedor = NULL WHERE id_proveedor = ?");
-            psReset.setInt(1, p.getIdProveedor());
-            psReset.executeUpdate();
-            psReset.close();
 
+            // Eliminar asociaciones en la tabla pivote
+            PreparedStatement psDel = con.prepareStatement(
+                "DELETE FROM proveedor_producto WHERE id_proveedor = ?");
+            psDel.setInt(1, p.getIdProveedor());
+            psDel.executeUpdate();
+            psDel.close();
+
+            // Borrado lógico del proveedor
             PreparedStatement ps = con.prepareStatement(
                 "UPDATE proveedores SET activo = FALSE WHERE id_proveedor = ?");
             ps.setInt(1, p.getIdProveedor());
@@ -370,7 +417,7 @@ public class ProveedoresController implements Initializable {
         txtDireccion.clear();
         cmbProducto.setValue(null);
         productosSeleccionados.clear();
-        refrescarVboxProductos();
+        refrescarChipsProductos();
         lblErrorForm.setText("");
         idProveedorEditando = -1;
     }
@@ -419,6 +466,6 @@ public class ProveedoresController implements Initializable {
         public String getNombre()     { return nombre; }
 
         @Override
-        public String toString() { return nombre; } // el ComboBox muestra este valor
+        public String toString() { return nombre; }
     }
-}   
+}

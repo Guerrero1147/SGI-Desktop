@@ -9,7 +9,6 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -116,10 +115,12 @@ public class MovimientosController implements Initializable {
             private final Button btnEliminar = new Button("🗑️ Eliminar");
             private final HBox   hbox        = new HBox(6, btnVer, btnEliminar);
             {
-                btnVer.setStyle("-fx-background-color: #1565c0; -fx-text-fill: white; " +
-                        "-fx-background-radius: 4; -fx-cursor: hand; -fx-font-size: 11px;");
-                btnEliminar.setStyle("-fx-background-color: #b71c1c; -fx-text-fill: white; " +
-                        "-fx-background-radius: 4; -fx-cursor: hand; -fx-font-size: 11px;");
+                btnVer.setStyle("-fx-background-color: rgba(16,185,129,0.12); -fx-text-fill: #10b981; " +
+                        "-fx-font-size: 11px; -fx-background-radius: 4; -fx-cursor: hand; " +
+                        "-fx-padding: 4 10 4 10; -fx-border-color: rgba(16,185,129,0.25); -fx-border-radius: 4;");
+                btnEliminar.setStyle("-fx-background-color: rgba(239,68,68,0.1); -fx-text-fill: #ef4444; " +
+                        "-fx-font-size: 11px; -fx-background-radius: 4; -fx-cursor: hand; " +
+                        "-fx-padding: 4 10 4 10; -fx-border-color: rgba(239,68,68,0.25); -fx-border-radius: 4;");
                 btnVer.setOnAction(e -> {
                     Movimiento m = getTableView().getItems().get(getIndex());
                     verDetalle(m);
@@ -151,8 +152,9 @@ public class MovimientosController implements Initializable {
         colDetQuitar.setCellFactory(col -> new TableCell<>() {
             private final Button btn = new Button("✖");
             {
-                btn.setStyle("-fx-background-color: #b71c1c; -fx-text-fill: white; " +
-                        "-fx-background-radius: 4; -fx-cursor: hand; -fx-font-size: 11px;");
+                btn.setStyle("-fx-background-color: rgba(239,68,68,0.1); -fx-text-fill: #ef4444; " +
+                        "-fx-font-size: 11px; -fx-background-radius: 4; -fx-cursor: hand; " +
+                        "-fx-padding: 4 10 4 10; -fx-border-color: rgba(239,68,68,0.25); -fx-border-radius: 4;");
                 btn.setOnAction(e -> {
                     DetalleMovimiento d = getTableView().getItems().get(getIndex());
                     listaDetalle.remove(d);
@@ -335,7 +337,17 @@ public class MovimientosController implements Initializable {
             lblErrorForm.setText("❌ Agrega al menos un producto.");
             return;
         }
- 
+
+        String tipo = cmbTipo.getValue();
+        int numProductos = listaDetalle.size();
+        boolean confirmado = ConfirmDialog.mostrar(
+            "¿Registrar movimiento?",
+            "Se registrará una " + tipo + " con " + numProductos +
+                " producto(s).\nEsta acción actualizará el stock.",
+            ConfirmDialog.Tipo.GUARDAR
+        );
+        if (!confirmado) return;
+
         try {
             Connection con = Conexion.getConexion();
  
@@ -427,17 +439,13 @@ public class MovimientosController implements Initializable {
     // ── Eliminar movimiento (solo admin) ────────────────────────────────────
 
     private void confirmarEliminarMovimiento(Movimiento m) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmar eliminación");
-        alert.setHeaderText("¿Eliminar movimiento #" + m.getIdMovimiento() + "?");
-        alert.setContentText(
-            "Tipo: " + m.getTipo() + "  |  Fecha: " + m.getFecha() + "\n\n" +
-            "⚠️ Esta acción revertirá el stock de todos los productos\n" +
-            "involucrados y no se puede deshacer.");
-        Optional<ButtonType> res = alert.showAndWait();
-        if (res.isPresent() && res.get() == ButtonType.OK) {
-            eliminarMovimiento(m);
-        }
+        boolean confirmado = ConfirmDialog.mostrar(
+            "¿Eliminar movimiento #" + m.getIdMovimiento() + "?",
+            "Tipo: " + m.getTipo() + "  |  Fecha: " + m.getFecha() +
+            "\n⚠ Se revertirá el stock de todos los productos involucrados.",
+            ConfirmDialog.Tipo.ELIMINAR
+        );
+        if (confirmado) eliminarMovimiento(m);
     }
 
     private void eliminarMovimiento(Movimiento m) {
@@ -507,6 +515,14 @@ public class MovimientosController implements Initializable {
         if (resultFecha.isEmpty() || resultFecha.get() == null) return;
 
         java.time.LocalDate fecha = resultFecha.get();
+
+        boolean confirmado = ConfirmDialog.mostrar(
+            "¿Generar corte de caja?",
+            "Se generará el corte de caja\npara la fecha: " + fecha + ".",
+            ConfirmDialog.Tipo.CORTAR_CAJA
+        );
+        if (!confirmado) return;
+
         generarCorteDeCaja(fecha);
     }
 
@@ -620,13 +636,13 @@ public class MovimientosController implements Initializable {
             txtResumen.setEditable(false);
             txtResumen.setStyle(
                 "-fx-font-family: 'Courier New', monospace; -fx-font-size: 13px;" +
-                "-fx-background-color: #1a1a2e; -fx-text-fill: #e0e0e0;" +
+                "-fx-background-color: #141a0e; -fx-text-fill: #d4e8c2;" +
                 "-fx-control-inner-background: #1a1a2e;");
             txtResumen.setPrefSize(480, 370);
             txtResumen.setWrapText(false);
 
             dialogCorte.getDialogPane().setContent(txtResumen);
-            dialogCorte.getDialogPane().setStyle("-fx-background-color: #1a1a2e;");
+            dialogCorte.getDialogPane().setStyle("-fx-background-color: #141a0e;");
             dialogCorte.showAndWait();
 
         } catch (Exception e) {

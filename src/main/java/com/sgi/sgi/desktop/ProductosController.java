@@ -9,7 +9,6 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -77,10 +76,12 @@ public class ProductosController implements Initializable {
             private final HBox hbox = new HBox(5, btnEditar, btnEliminar);
 
             {
-                btnEditar.setStyle("-fx-background-color: #1565c0; -fx-text-fill: white; " +
-                        "-fx-background-radius: 4; -fx-cursor: hand; -fx-font-size: 11px;");
-                btnEliminar.setStyle("-fx-background-color: #b71c1c; -fx-text-fill: white; " +
-                        "-fx-background-radius: 4; -fx-cursor: hand; -fx-font-size: 11px;");
+                btnEditar.setStyle("-fx-background-color: rgba(245,166,35,0.12); -fx-text-fill: #f5a623; " +
+                        "-fx-font-size: 11px; -fx-background-radius: 4; -fx-cursor: hand; " +
+                        "-fx-padding: 4 10 4 10; -fx-border-color: rgba(0,212,245,0.25); -fx-border-radius: 4;");
+                btnEliminar.setStyle("-fx-background-color: rgba(239,68,68,0.1); -fx-text-fill: #ef4444; " +
+                        "-fx-font-size: 11px; -fx-background-radius: 4; -fx-cursor: hand; " +
+                        "-fx-padding: 4 10 4 10; -fx-border-color: rgba(239,68,68,0.25); -fx-border-radius: 4;");
 
                 btnEditar.setOnAction(e -> {
                     Producto p = getTableView().getItems().get(getIndex());
@@ -190,6 +191,16 @@ public class ProductosController implements Initializable {
     private void guardarProducto() {
         if (!validarFormulario()) return;
 
+        String nombre = txtNombre.getText().trim();
+        boolean confirmado = ConfirmDialog.mostrar(
+            (idProductoEditando == -1) ? "¿Agregar producto?" : "¿Guardar cambios?",
+            (idProductoEditando == -1)
+                ? "Se registrará el nuevo producto \"" + nombre + "\"."
+                : "Se guardarán los cambios del producto \"" + nombre + "\".",
+            ConfirmDialog.Tipo.GUARDAR
+        );
+        if (!confirmado) return;
+
         try {
             Connection con = Conexion.getConexion();
             String categoria = cmbCategoria.getValue();
@@ -247,14 +258,12 @@ public class ProductosController implements Initializable {
     }
 
     private void confirmarEliminar(Producto p) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmar eliminación");
-        alert.setHeaderText("¿Eliminar producto?");
-        alert.setContentText("¿Estás seguro de eliminar \"" + p.getNombre() + "\"?\nEsta acción no se puede deshacer.");
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            eliminarProducto(p);
-        }
+        boolean confirmado = ConfirmDialog.mostrar(
+            "¿Eliminar producto?",
+            "Se eliminará \"" + p.getNombre() + "\".\nEsta acción no se puede deshacer.",
+            ConfirmDialog.Tipo.ELIMINAR
+        );
+        if (confirmado) eliminarProducto(p);
     }
 
     private void eliminarProducto(Producto p) {

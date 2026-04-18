@@ -8,153 +8,146 @@
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.sgi.sgi.desktop.ProveedoresController"
-            style="-fx-background-color: #1a1a2e;">
+            style="-fx-background-color: #141a0e;">
     <stylesheets>
         <String fx:value="/com/sgi/sgi/desktop/estilo.css"/>
     </stylesheets>
 
     <top>
-        <VBox style="-fx-background-color: #1a1a2e; -fx-padding: 25 25 10 25;" spacing="15">
+        <VBox style="-fx-background-color: #141a0e; -fx-padding: 28 28 14 28;" spacing="14">
 
-            <Label text="Gestión de Proveedores"
-                   style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Region prefWidth="4" prefHeight="34"
+                        style="-fx-background-color: #f59e0b; -fx-background-radius: 2;"/>
+                <VBox spacing="2">
+                    <Label text="Proveedores"
+                           style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #ecf0e5;"/>
+                    <Label text="Directorio de proveedores y sus productos"
+                           style="-fx-font-size: 12px; -fx-text-fill: #586b45;"/>
+                </VBox>
+            </HBox>
 
             <HBox spacing="10" alignment="CENTER_LEFT">
                 <TextField fx:id="txtBuscar"
-                           promptText="🔍 Buscar proveedor por nombre, email o teléfono..."
-                           prefWidth="380"
+                           promptText="🔍  Buscar por nombre, email o teléfono..."
+                           prefWidth="360"
                            onKeyReleased="#buscarProveedor"
-                           style="-fx-background-color: #0f3460; -fx-text-fill: white;
-                                  -fx-prompt-text-fill: #546e7a; -fx-background-radius: 6;
-                                  -fx-padding: 10; -fx-font-size: 13px;
-                                  -fx-border-color: #1565c0; -fx-border-radius: 6;"/>
+                           styleClass="text-field"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Button text="➕  Agregar Proveedor" onAction="#abrirFormularioAgregar"
-                        style="-fx-background-color: #1565c0; -fx-text-fill: white;
-                               -fx-font-size: 13px; -fx-padding: 10 20 10 20;
-                               -fx-background-radius: 6; -fx-cursor: hand;"/>
-                <Button text="🔄  Actualizar" onAction="#cargarProveedores"
-                        style="-fx-background-color: #0f3460; -fx-text-fill: #90caf9;
-                               -fx-font-size: 13px; -fx-padding: 10 20 10 20;
-                               -fx-background-radius: 6; -fx-cursor: hand;
-                               -fx-border-color: #1565c0; -fx-border-radius: 6;"/>
+                <Button text="➕  Agregar" onAction="#abrirFormularioAgregar"
+                        style="-fx-background-color: #f5a623; -fx-text-fill: #0a1005;
+                               -fx-font-weight: bold; -fx-font-size: 13px;
+                               -fx-background-radius: 6; -fx-padding: 10 18 10 18; -fx-cursor: hand;"/>
+                <Button text="↺  Actualizar" onAction="#cargarProveedores"
+                        styleClass="btn-secondary"/>
             </HBox>
 
             <Label fx:id="lblMensaje" text=""
-                   style="-fx-font-size: 12px; -fx-text-fill: #66bb6a;"/>
+                   style="-fx-font-size: 12px; -fx-text-fill: #10b981;"/>
         </VBox>
     </top>
 
-    <!-- TABLA -->
     <center>
-        <VBox style="-fx-padding: 0 25 25 25; -fx-background-color: #1a1a2e;">
-            <TableView fx:id="tablaProveedores" VBox.vgrow="ALWAYS"
-                       style="-fx-background-color: #0f3460; -fx-background-radius: 8;
-                              -fx-border-color: #1565c0; -fx-border-radius: 8;">
+        <VBox style="-fx-padding: 0 28 28 28; -fx-background-color: #141a0e;">
+            <TableView fx:id="tablaProveedores" VBox.vgrow="ALWAYS" styleClass="table-view">
                 <columns>
-                    <TableColumn fx:id="colId" text="#" prefWidth="50"
-                                 style="-fx-background-color: #1565c0; -fx-font-weight: bold;"/>
-                    <TableColumn fx:id="colNombre" text="Nombre" prefWidth="160"
-                                 style="-fx-background-color: #1565c0; -fx-font-weight: bold;"/>
-                    <TableColumn fx:id="colTelefono" text="Teléfono" prefWidth="110"
-                                 style="-fx-background-color: #1565c0; -fx-font-weight: bold;"/>
-                    <TableColumn fx:id="colEmail" text="Email" prefWidth="170"
-                                 style="-fx-background-color: #1565c0; -fx-font-weight: bold;"/>
-                    <TableColumn fx:id="colDireccion" text="Dirección" prefWidth="160"
-                                 style="-fx-background-color: #1565c0; -fx-font-weight: bold;"/>
-                    <TableColumn fx:id="colProductos" text="Productos que surte" prefWidth="220"
-                                 style="-fx-background-color: #1565c0; -fx-font-weight: bold;"/>
-                    <TableColumn fx:id="colAcciones" text="Acciones" prefWidth="160"
-                                 style="-fx-background-color: #1565c0; -fx-font-weight: bold;"/>
+                    <TableColumn fx:id="colId"        text="ID"         prefWidth="50"/>
+                    <TableColumn fx:id="colNombre"    text="NOMBRE"     prefWidth="160"/>
+                    <TableColumn fx:id="colEmail"     text="EMAIL"      prefWidth="170"/>
+                    <TableColumn fx:id="colTelefono"  text="TELÉFONO"   prefWidth="110"/>
+                    <TableColumn fx:id="colDireccion" text="DIRECCIÓN"  prefWidth="170"/>
+                    <TableColumn fx:id="colProductos" text="PRODUCTOS"  prefWidth="160"/>
+                    <TableColumn fx:id="colAcciones"  text="ACCIONES"   prefWidth="160"/>
                 </columns>
                 <placeholder>
-                    <Label text="No hay proveedores registrados aún"
-                           style="-fx-text-fill: #546e7a; -fx-font-size: 14px;"/>
+                    <Label text="🏢  No hay proveedores registrados aún"
+                           style="-fx-text-fill: #586b45; -fx-font-size: 14px;"/>
                 </placeholder>
             </TableView>
         </VBox>
     </center>
 
-    <!-- FORMULARIO LATERAL -->
     <right>
-        <ScrollPane fitToWidth="true" style="-fx-background-color: #16213e;"
-                    hbarPolicy="NEVER">
-            <VBox fx:id="panelFormulario" spacing="12" prefWidth="300" minWidth="300"
-                  style="-fx-background-color: #16213e; -fx-padding: 25;"
-                  visible="false" managed="false">
+        <!-- Panel lateral: header fijo + scroll en el cuerpo + footer fijo -->
+        <VBox fx:id="panelFormulario" spacing="0" prefWidth="300" minWidth="300"
+              style="-fx-background-color: #0f1409;
+                     -fx-border-color: transparent transparent transparent #2a3820;
+                     -fx-border-width: 0 0 0 1;"
+              visible="false" managed="false">
 
+            <!-- ── HEADER fijo ── -->
+            <VBox spacing="10" style="-fx-padding: 24 24 12 24;">
                 <Label fx:id="lblTituloForm" text="Agregar Proveedor"
-                       style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                       style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #ecf0e5;"/>
+                <Separator styleClass="separator"/>
+            </VBox>
 
-                <!-- Datos del proveedor -->
-                <Label text="Nombre *" style="-fx-text-fill: #90caf9; -fx-font-size: 12px;"/>
-                <TextField fx:id="txtNombre" promptText="Nombre del proveedor"
-                           style="-fx-background-color: #0f3460; -fx-text-fill: white;
-                                  -fx-prompt-text-fill: #546e7a; -fx-background-radius: 6;
-                                  -fx-padding: 8; -fx-border-color: #1565c0; -fx-border-radius: 6;"/>
+            <!-- ── CUERPO con scroll ── -->
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                        styleClass="panel-scroll"
+                        style="-fx-background-color: transparent; -fx-background: #0f1409;
+                               -fx-border-color: transparent; -fx-padding: 0;">
+                <content>
+                    <VBox spacing="10" style="-fx-padding: 0 24 16 24; -fx-background-color: #0f1409;">
 
-                <Label text="Teléfono" style="-fx-text-fill: #90caf9; -fx-font-size: 12px;"/>
-                <TextField fx:id="txtTelefono" promptText="Ej: 229-123-4567"
-                           style="-fx-background-color: #0f3460; -fx-text-fill: white;
-                                  -fx-prompt-text-fill: #546e7a; -fx-background-radius: 6;
-                                  -fx-padding: 8; -fx-border-color: #1565c0; -fx-border-radius: 6;"/>
+                        <Label text="NOMBRE *" style="-fx-text-fill: #a3b891; -fx-font-size: 10px; -fx-font-weight: bold;"/>
+                        <TextField fx:id="txtNombre" promptText="Nombre del proveedor" styleClass="text-field"/>
 
-                <Label text="Email" style="-fx-text-fill: #90caf9; -fx-font-size: 12px;"/>
-                <TextField fx:id="txtEmail" promptText="correo@ejemplo.com"
-                           style="-fx-background-color: #0f3460; -fx-text-fill: white;
-                                  -fx-prompt-text-fill: #546e7a; -fx-background-radius: 6;
-                                  -fx-padding: 8; -fx-border-color: #1565c0; -fx-border-radius: 6;"/>
+                        <Label text="EMAIL" style="-fx-text-fill: #a3b891; -fx-font-size: 10px; -fx-font-weight: bold;"/>
+                        <TextField fx:id="txtEmail" promptText="correo@proveedor.com" styleClass="text-field"/>
 
-                <Label text="Dirección" style="-fx-text-fill: #90caf9; -fx-font-size: 12px;"/>
-                <TextField fx:id="txtDireccion" promptText="Dirección del proveedor"
-                           style="-fx-background-color: #0f3460; -fx-text-fill: white;
-                                  -fx-prompt-text-fill: #546e7a; -fx-background-radius: 6;
-                                  -fx-padding: 8; -fx-border-color: #1565c0; -fx-border-radius: 6;"/>
+                        <Label text="TELÉFONO" style="-fx-text-fill: #a3b891; -fx-font-size: 10px; -fx-font-weight: bold;"/>
+                        <TextField fx:id="txtTelefono" promptText="Teléfono de contacto" styleClass="text-field"/>
 
-                <!-- Separador -->
-                <Separator style="-fx-background-color: #1565c0;"/>
+                        <Label text="DIRECCIÓN" style="-fx-text-fill: #a3b891; -fx-font-size: 10px; -fx-font-weight: bold;"/>
+                        <TextField fx:id="txtDireccion" promptText="Dirección del proveedor" styleClass="text-field"/>
 
-                <!-- Selector de productos -->
-                <Label text="Productos que surte"
-                       style="-fx-text-fill: #90caf9; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                        <Separator styleClass="separator"/>
 
-                <HBox spacing="8" alignment="CENTER_LEFT">
-                    <ComboBox fx:id="cmbProducto"
-                              promptText="Seleccionar producto..."
-                              HBox.hgrow="ALWAYS" maxWidth="Infinity"
-                              style="-fx-background-color: #0f3460; -fx-text-fill: white;
-                                     -fx-border-color: #1565c0; -fx-border-radius: 6;"/>
-                    <Button text="➕" onAction="#agregarProductoLista"
-                            style="-fx-background-color: #1565c0; -fx-text-fill: white;
-                                   -fx-background-radius: 4; -fx-cursor: hand;
-                                   -fx-font-size: 14px; -fx-padding: 4 10 4 10;"/>
-                </HBox>
+                        <Label text="PRODUCTOS ASOCIADOS"
+                               style="-fx-text-fill: #a3b891; -fx-font-size: 10px; -fx-font-weight: bold;"/>
+                        <ComboBox fx:id="cmbProducto" maxWidth="Infinity"
+                                  promptText="Seleccionar producto..."
+                                  styleClass="combo-box"/>
+                        <Button text="➕  Asociar Producto" onAction="#agregarProductoLista"
+                                maxWidth="Infinity" styleClass="btn-secondary"/>
 
-                <!-- VBox donde aparece la lista de productos seleccionados -->
-                <VBox fx:id="vboxProductosSeleccionados" spacing="6"
-                      style="-fx-background-color: #0f3460; -fx-background-radius: 6;
-                             -fx-padding: 10; -fx-border-color: #1565c0; -fx-border-radius: 6;"/>
+                        <!-- Chips de productos seleccionados -->
+                        <VBox fx:id="vboxProductosSeleccionados" spacing="8"
+                              style="-fx-background-color: #141a0e;
+                                     -fx-padding: 10;
+                                     -fx-border-color: #2a3820;
+                                     -fx-border-radius: 8;
+                                     -fx-background-radius: 8;
+                                     -fx-min-height: 46;"/>
 
-                <!-- Error -->
+                    </VBox>
+                </content>
+            </ScrollPane>
+
+            <!-- ── FOOTER fijo: error + botones ── -->
+            <VBox spacing="8" style="-fx-padding: 12 24 20 24; -fx-background-color: #0f1409;
+                                     -fx-border-color: #2a3820 transparent transparent transparent;
+                                     -fx-border-width: 1 0 0 0;">
                 <Label fx:id="lblErrorForm" text=""
-                       style="-fx-text-fill: #ef5350; -fx-font-size: 12px; -fx-wrap-text: true;"/>
-
-                <!-- Botones -->
-                <HBox spacing="10">
+                       style="-fx-text-fill: #ef4444; -fx-font-size: 12px; -fx-wrap-text: true;"/>
+                <HBox spacing="8">
                     <Button text="💾  Guardar" onAction="#guardarProveedor"
                             HBox.hgrow="ALWAYS" maxWidth="Infinity"
-                            style="-fx-background-color: #1565c0; -fx-text-fill: white;
-                                   -fx-font-size: 13px; -fx-padding: 10;
-                                   -fx-background-radius: 6; -fx-cursor: hand;"/>
-                    <Button text="✖  Cancelar" onAction="#cerrarFormulario"
-                            HBox.hgrow="ALWAYS" maxWidth="Infinity"
-                            style="-fx-background-color: #b71c1c; -fx-text-fill: white;
-                                   -fx-font-size: 13px; -fx-padding: 10;
-                                   -fx-background-radius: 6; -fx-cursor: hand;"/>
+                            style="-fx-background-color: #f5a623; -fx-text-fill: #0a1005;
+                                   -fx-font-weight: bold; -fx-font-size: 13px;
+                                   -fx-background-radius: 6; -fx-padding: 10; -fx-cursor: hand;"/>
+                    <Button text="✖" onAction="#cerrarFormulario"
+                            style="-fx-background-color: rgba(239,68,68,0.12);
+                                   -fx-text-fill: #ef4444;
+                                   -fx-font-size: 14px; -fx-font-weight: bold;
+                                   -fx-background-radius: 6;
+                                   -fx-padding: 10 14 10 14; -fx-cursor: hand;
+                                   -fx-border-color: rgba(239,68,68,0.35); -fx-border-radius: 6;"/>
                 </HBox>
-
             </VBox>
-        </ScrollPane>
+
+        </VBox>
     </right>
 
 </BorderPane>

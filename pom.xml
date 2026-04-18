@@ -96,4 +96,5 @@
 
         </plugins>
     </build>
+    <name>SGI-Desktop</name>
 </project>

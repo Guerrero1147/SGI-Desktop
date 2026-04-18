@@ -16,6 +16,7 @@ public class Conexion {
     private static final String DB;
     private static final String USUARIO;
     private static final String PASSWORD;
+    private static final boolean SSL;
     private static final String URL;
  
     static {
@@ -35,8 +36,15 @@ public class Conexion {
         DB       = props.getProperty("db.name");
         USUARIO  = props.getProperty("db.user");
         PASSWORD = props.getProperty("db.password");
-        URL = "jdbc:mysql://" + HOST + ":" + PORT + "/" + DB
-            + "?ssl-mode=REQUIRED&useSSL=true&serverTimezone=UTC";
+        SSL      = Boolean.parseBoolean(props.getProperty("db.ssl", "false"));
+
+        if (SSL) {
+            URL = "jdbc:mysql://" + HOST + ":" + PORT + "/" + DB
+                + "?ssl-mode=REQUIRED&useSSL=true&serverTimezone=UTC";
+        } else {
+            URL = "jdbc:mysql://" + HOST + ":" + PORT + "/" + DB
+                + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
+        }
     }
  
     public static Connection getConexion() {

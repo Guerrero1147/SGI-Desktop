@@ -5,7 +5,6 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -63,10 +62,12 @@ public class UsuariosController implements Initializable {
             private final HBox   hbox        = new HBox(5, btnEditar, btnEliminar);
 
             {
-                btnEditar.setStyle("-fx-background-color: #1565c0; -fx-text-fill: white; " +
-                        "-fx-background-radius: 4; -fx-cursor: hand; -fx-font-size: 11px;");
-                btnEliminar.setStyle("-fx-background-color: #b71c1c; -fx-text-fill: white; " +
-                        "-fx-background-radius: 4; -fx-cursor: hand; -fx-font-size: 11px;");
+                btnEditar.setStyle("-fx-background-color: rgba(245,166,35,0.12); -fx-text-fill: #f5a623; " +
+                        "-fx-font-size: 11px; -fx-background-radius: 4; -fx-cursor: hand; " +
+                        "-fx-padding: 4 10 4 10; -fx-border-color: rgba(0,212,245,0.25); -fx-border-radius: 4;");
+                btnEliminar.setStyle("-fx-background-color: rgba(239,68,68,0.1); -fx-text-fill: #ef4444; " +
+                        "-fx-font-size: 11px; -fx-background-radius: 4; -fx-cursor: hand; " +
+                        "-fx-padding: 4 10 4 10; -fx-border-color: rgba(239,68,68,0.25); -fx-border-radius: 4;");
 
                 btnEditar.setOnAction(e -> abrirFormularioEditar(
                         getTableView().getItems().get(getIndex())));
@@ -153,6 +154,16 @@ public class UsuariosController implements Initializable {
     private void guardarUsuario() {
         if (!validarFormulario()) return;
 
+        String nombre = txtNombre.getText().trim();
+        boolean confirmado = ConfirmDialog.mostrar(
+            (idUsuarioEditando == -1) ? "¿Agregar usuario?" : "¿Guardar cambios?",
+            (idUsuarioEditando == -1)
+                ? "Se registrará el nuevo usuario \"" + nombre + "\"."
+                : "Se guardarán los cambios del usuario \"" + nombre + "\".",
+            ConfirmDialog.Tipo.GUARDAR
+        );
+        if (!confirmado) return;
+
         try {
             Connection con = Conexion.getConexion();
 
@@ -205,14 +216,12 @@ public class UsuariosController implements Initializable {
     // ── Eliminar ────────────────────────────────────────────────────────────
 
     private void confirmarEliminar(Usuario u) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmar eliminación");
-        alert.setHeaderText("¿Eliminar usuario?");
-        alert.setContentText("¿Estás seguro de eliminar a \"" + u.getNombre() + "\"?\n" +
-                             "Esta acción no se puede deshacer.");
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK)
-            eliminarUsuario(u);
+        boolean confirmado = ConfirmDialog.mostrar(
+            "¿Eliminar usuario?",
+            "Se eliminará al usuario \"" + u.getNombre() + "\".\nEsta acción no se puede deshacer.",
+            ConfirmDialog.Tipo.ELIMINAR
+        );
+        if (confirmado) eliminarUsuario(u);
     }
 
     private void eliminarUsuario(Usuario u) {
