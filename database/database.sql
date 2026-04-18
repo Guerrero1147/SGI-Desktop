@@ -61,7 +61,7 @@ CREATE TABLE `detalle_movimientos` (
   KEY `fk_detalle_producto` (`id_producto`),
   CONSTRAINT `fk_detalle_movimiento` FOREIGN KEY (`id_movimiento`) REFERENCES `movimientos` (`id_movimiento`) ON DELETE CASCADE,
   CONSTRAINT `fk_detalle_producto` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`) ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -70,6 +70,7 @@ CREATE TABLE `detalle_movimientos` (
 
 LOCK TABLES `detalle_movimientos` WRITE;
 /*!40000 ALTER TABLE `detalle_movimientos` DISABLE KEYS */;
+INSERT INTO `detalle_movimientos` VALUES (12,12,18,20,40.00),(13,13,18,50,20.00),(15,15,18,10,20.00),(16,16,21,10,20.00),(17,16,18,10,20.00);
 /*!40000 ALTER TABLE `detalle_movimientos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -89,7 +90,7 @@ CREATE TABLE `movimientos` (
   PRIMARY KEY (`id_movimiento`),
   KEY `fk_movimiento_usuario` (`id_usuario`),
   CONSTRAINT `fk_movimiento_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`) ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -98,6 +99,7 @@ CREATE TABLE `movimientos` (
 
 LOCK TABLES `movimientos` WRITE;
 /*!40000 ALTER TABLE `movimientos` DISABLE KEYS */;
+INSERT INTO `movimientos` VALUES (12,'SALIDA','2026-04-10 17:24:30','Papitas',1),(13,'ENTRADA','2026-04-10 17:24:49','Papitas',1),(15,'ENTRADA','2026-04-13 15:49:29','compra de mango',1),(16,'ENTRADA','2026-04-17 16:05:12','Alimentos',1);
 /*!40000 ALTER TABLE `movimientos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -127,7 +129,7 @@ CREATE TABLE `productos` (
   KEY `fk_producto_proveedor` (`id_proveedor`),
   CONSTRAINT `fk_producto_categoria` FOREIGN KEY (`id_categoria`) REFERENCES `categorias` (`id_categoria`) ON DELETE SET NULL,
   CONSTRAINT `fk_producto_proveedor` FOREIGN KEY (`id_proveedor`) REFERENCES `proveedores` (`id_proveedor`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -136,8 +138,35 @@ CREATE TABLE `productos` (
 
 LOCK TABLES `productos` WRITE;
 /*!40000 ALTER TABLE `productos` DISABLE KEYS */;
-INSERT INTO `productos` VALUES (9,'125','Coca','Refresco',20.00,25.00,20,10,4,NULL,0,'2026-03-21 22:34:29');
+INSERT INTO `productos` VALUES (9,'125','Coca','Refresco',20.00,25.00,20,10,4,NULL,0,'2026-03-21 22:34:29'),(10,'12','Papas','Papitas ricas',25.00,30.00,30,10,4,NULL,0,'2026-04-08 17:34:31'),(11,'11','Arroz empacado','Arroz',15.00,10.00,20,15,4,NULL,0,'2026-04-08 18:12:45'),(12,'13','Pene','Pene',20.00,30.00,30,15,4,NULL,0,'2026-04-08 18:28:32'),(14,'14','Pene','Pene hay que rico',20.00,30.00,50,20,4,NULL,0,'2026-04-08 18:32:31'),(15,'15','Pucha','Pucha hay que rico',20.00,100.00,20,10,4,NULL,0,'2026-04-08 19:04:11'),(16,'16','Papas','papitas',20.00,30.00,30,10,4,NULL,0,'2026-04-08 20:57:48'),(18,'17','Papas','papitas',20.00,40.00,70,10,4,3,1,'2026-04-09 18:37:39'),(19,'789','mango','fruta fresca',5.00,15.00,0,20,4,NULL,1,'2026-04-13 15:48:14'),(20,'228','Manzana','Manzanitas',15.00,20.00,15,10,4,NULL,1,'2026-04-14 01:24:51'),(21,'1235','Bistec','Bistec',20.00,45.00,40,15,4,NULL,1,'2026-04-17 16:01:46');
 /*!40000 ALTER TABLE `productos` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `proveedor_producto`
+--
+
+DROP TABLE IF EXISTS `proveedor_producto`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `proveedor_producto` (
+  `id_proveedor` int NOT NULL,
+  `id_producto` int NOT NULL,
+  PRIMARY KEY (`id_proveedor`,`id_producto`),
+  KEY `fk_pp_producto` (`id_producto`),
+  CONSTRAINT `fk_pp_producto` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`) ON DELETE CASCADE,
+  CONSTRAINT `fk_pp_proveedor` FOREIGN KEY (`id_proveedor`) REFERENCES `proveedores` (`id_proveedor`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `proveedor_producto`
+--
+
+LOCK TABLES `proveedor_producto` WRITE;
+/*!40000 ALTER TABLE `proveedor_producto` DISABLE KEYS */;
+INSERT INTO `proveedor_producto` VALUES (3,18),(4,18),(4,19),(4,20);
+/*!40000 ALTER TABLE `proveedor_producto` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -155,7 +184,7 @@ CREATE TABLE `proveedores` (
   `direccion` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `activo` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id_proveedor`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -164,6 +193,7 @@ CREATE TABLE `proveedores` (
 
 LOCK TABLES `proveedores` WRITE;
 /*!40000 ALTER TABLE `proveedores` DISABLE KEYS */;
+INSERT INTO `proveedores` VALUES (1,'Industrias maxwell','2299999999','Cascabell@gmail.com','Avenida miguel',0),(2,'Puchas enterprise','229 999 9999','caca@hormail.com','caca',0),(3,'Sabristas','229 999 9999','sabristas@gmail.com','Surten papitas',1),(4,'Coca-cola','229 657 8970','coca@gmail.com','Lopez mateo',1);
 /*!40000 ALTER TABLE `proveedores` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -184,7 +214,7 @@ CREATE TABLE `usuarios` (
   `fecha_creacion` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_usuario`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -193,7 +223,7 @@ CREATE TABLE `usuarios` (
 
 LOCK TABLES `usuarios` WRITE;
 /*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
-INSERT INTO `usuarios` VALUES (1,'Administrador','admin','admin123','ADMIN',1,'2026-03-03 22:15:04');
+INSERT INTO `usuarios` VALUES (1,'Administrador','admin','admin123','ADMIN',1,'2026-03-03 22:15:04'),(2,'Alfredo','empleado','753951','EMPLEADO',1,'2026-07-04 21:08:54');
 /*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -277,4 +307,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-04-06 18:49:59
+-- Dump completed on 2026-04-17 21:34:42
