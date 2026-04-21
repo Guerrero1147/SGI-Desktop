@@ -8,19 +8,19 @@ import javafx.scene.layout.*;
 import javafx.scene.text.TextAlignment;
 
 /**
- * Diálogos de confirmación con estilo consistente al tema oscuro de SGI-Desktop.
+ * Diálogos de confirmación con estilo consistente al tema claro de SGI-Desktop.
  */
 public class ConfirmDialog {
 
-    private static final String PANEL_BG    = "#1e2714";
-    private static final String DARK_BG     = "#141a0e";
-    private static final String BORDER      = "#2a3820";
-    private static final String TEXT_PRI    = "#ecf0e5";
-    private static final String TEXT_SEC    = "#a3b891";
-    private static final String AMBER        = "#f5a623";
-    private static final String RED         = "#ef4444";
-    private static final String GREEN       = "#4ade80";
-    private static final String ORANGE      = "#fb923c";
+    private static final String PANEL_BG    = "#ffffff";
+    private static final String DARK_BG     = "#f5f5f4";
+    private static final String BORDER      = "#e5e5e3";
+    private static final String TEXT_PRI    = "#1c1c1c";
+    private static final String TEXT_SEC    = "#6b7280";
+    private static final String AMBER       = "#d97706";
+    private static final String RED         = "#dc2626";
+    private static final String GREEN       = "#16a34a";
+    private static final String ORANGE      = "#ea580c";
 
     public enum Tipo { ELIMINAR, GUARDAR, CERRAR_SESION, CORTAR_CAJA }
 
@@ -38,15 +38,15 @@ public class ConfirmDialog {
         String labelOK, colorOK, icono;
         switch (tipo) {
             case ELIMINAR:
-                labelOK = "Sí, eliminar";   colorOK = "#7c3aed";  icono = "🗑️"; break;
+                labelOK = "Sí, eliminar";   colorOK = "#7c3aed";  icono = "🗑"; break;
             case GUARDAR:
-                labelOK = "Sí, guardar";    colorOK = GREEN;  icono = "💾"; break;
+                labelOK = "Sí, guardar";    colorOK = GREEN;      icono = "💾"; break;
             case CERRAR_SESION:
-                labelOK = "Cerrar sesión";  colorOK = ORANGE; icono = "🚪"; break;
+                labelOK = "Cerrar sesión";  colorOK = ORANGE;     icono = "🚪"; break;
             case CORTAR_CAJA:
-                labelOK = "Generar corte";  colorOK = AMBER;   icono = "📊"; break;
+                labelOK = "Generar corte";  colorOK = AMBER;      icono = "📊"; break;
             default:
-                labelOK = "Confirmar";      colorOK = AMBER;   icono = "❓";
+                labelOK = "Confirmar";      colorOK = AMBER;      icono = "❓";
         }
 
         ButtonType btnOK     = new ButtonType(labelOK,    ButtonBar.ButtonData.OK_DONE);
@@ -89,36 +89,34 @@ public class ConfirmDialog {
             "-fx-background-color: " + PANEL_BG + ";" +
             "-fx-border-color: " + BORDER + ";" +
             "-fx-border-radius: 12; -fx-background-radius: 12;" +
-            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 20, 0, 0, 4);");
+            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 20, 0, 0, 4);");
 
         // ── Estilo de botones ───────────────────────────────────────────────
-        // Los botones no están disponibles hasta renderizar el panel, así que
-        // aplicamos estilos con Platform.runLater
         javafx.application.Platform.runLater(() -> {
     // ── Botón confirmar ─────────────────────────────────────────────
     javafx.scene.Node nodeOK = dialog.getDialogPane().lookupButton(btnOK);
     if (nodeOK != null) {
         String estiloOK =
             "-fx-background-color: " + colorOK + ";" +
-            "-fx-text-fill: " + (tipo == Tipo.GUARDAR ? "#0f172a" : "white") + ";" +
+            "-fx-text-fill: white;" +
             "-fx-font-weight: bold; -fx-font-size: 12px;" +
             "-fx-background-radius: 6; -fx-padding: 8 20; -fx-cursor: hand;" +
             "-fx-min-width: 130;";
         nodeOK.setStyle(estiloOK);
     }
 
-    // ── Botón cancelar (con hover rojo) ─────────────────────────────
+    // ── Botón cancelar ───────────────────────────────────────────────
     javafx.scene.Node nodeCancel = dialog.getDialogPane().lookupButton(btnCancel);
     if (nodeCancel != null) {
         String estiloNormal =
-            "-fx-background-color: transparent;" +
+            "-fx-background-color: " + DARK_BG + ";" +
             "-fx-text-fill: " + TEXT_SEC + ";" +
             "-fx-border-color: " + BORDER + ";" +
             "-fx-border-radius: 6; -fx-font-size: 12px;" +
             "-fx-padding: 8 20; -fx-cursor: hand;" +
             "-fx-min-width: 100;";
         String estiloHover =
-            "-fx-background-color: rgba(239,68,68,0.85);" +
+            "-fx-background-color: rgba(220,38,38,0.9);" +
             "-fx-text-fill: white;" +
             "-fx-border-color: transparent;" +
             "-fx-border-radius: 6; -fx-font-size: 12px;" +

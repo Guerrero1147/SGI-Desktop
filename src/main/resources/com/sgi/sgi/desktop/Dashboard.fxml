@@ -8,7 +8,7 @@
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.sgi.sgi.desktop.DashboardController"
-            style="-fx-background-color: #141a0e;"
+            style="-fx-background-color: #f5f5f4;"
             minWidth="900" minHeight="600">
     <stylesheets>
         <String fx:value="/com/sgi/sgi/desktop/estilo.css"/>
@@ -17,8 +17,8 @@
     <!-- ===== SIDEBAR IZQUIERDO ===== -->
     <left>
         <VBox spacing="4"
-              style="-fx-background-color: #0f1409; -fx-padding: 20 12 20 12;
-                     -fx-border-color: transparent #2a3820 transparent transparent;
+              style="-fx-background-color: #ffffff; -fx-padding: 20 12 20 12;
+                     -fx-border-color: transparent #e5e5e3 transparent transparent;
                      -fx-border-width: 0 1 0 0;"
               prefWidth="210" minWidth="210">
 
@@ -26,19 +26,19 @@
             <HBox alignment="CENTER_LEFT" spacing="10"
                   style="-fx-padding: 4 4 20 4;">
                 <Label text="◈"
-                       style="-fx-font-size: 22px; -fx-text-fill: #f5a623;"/>
+                       style="-fx-font-size: 22px; -fx-text-fill: #1c1c1c;"/>
                 <VBox spacing="0">
                     <Label text="SGI-Desktop"
                            style="-fx-font-size: 14px; -fx-font-weight: bold;
-                                  -fx-text-fill: #ecf0e5;"/>
+                                  -fx-text-fill: #1c1c1c;"/>
                     <Label text="Inventarios"
-                           style="-fx-font-size: 10px; -fx-text-fill: #586b45;"/>
+                           style="-fx-font-size: 10px; -fx-text-fill: #9ca3af;"/>
                 </VBox>
             </HBox>
 
             <!-- Sección MENÚ -->
             <Label text="MENÚ"
-                   style="-fx-text-fill: #2a3820; -fx-font-size: 10px;
+                   style="-fx-text-fill: #9ca3af; -fx-font-size: 10px;
                           -fx-font-weight: bold; -fx-padding: 0 0 4 16;"/>
 
             <Button fx:id="btnInicio" text="🏠   Inicio" maxWidth="Infinity"
@@ -64,12 +64,12 @@
             <Region VBox.vgrow="ALWAYS"/>
 
             <!-- Usuario activo -->
-            <VBox style="-fx-background-color: #141a0e; -fx-background-radius: 8;
+            <VBox style="-fx-background-color: #f5f5f4; -fx-background-radius: 8;
                          -fx-padding: 10 12 10 12;" spacing="2">
                 <Label text="SESIÓN ACTIVA"
-                       style="-fx-text-fill: #2a3820; -fx-font-size: 9px; -fx-font-weight: bold;"/>
+                       style="-fx-text-fill: #9ca3af; -fx-font-size: 9px; -fx-font-weight: bold;"/>
                 <Label fx:id="lblUsuario" text="Usuario"
-                       style="-fx-text-fill: #a3b891; -fx-font-size: 12px; -fx-wrap-text: true;"/>
+                       style="-fx-text-fill: #1c1c1c; -fx-font-size: 12px; -fx-wrap-text: true;"/>
             </VBox>
 
             <Region prefHeight="8"/>
@@ -77,17 +77,17 @@
             <Button text="🚪   Cerrar Sesión" maxWidth="Infinity"
                     onAction="#cerrarSesion"
                     styleClass="btn-danger"
-                    style="-fx-background-color: rgba(239,68,68,0.12); -fx-text-fill: #ef4444;
+                    style="-fx-background-color: rgba(220,38,38,0.08); -fx-text-fill: #dc2626;
                            -fx-font-size: 13px; -fx-background-radius: 6;
                            -fx-padding: 10; -fx-cursor: hand; -fx-alignment: CENTER-LEFT;
-                           -fx-border-color: rgba(239,68,68,0.25); -fx-border-radius: 6;"/>
+                           -fx-border-color: rgba(220,38,38,0.2); -fx-border-radius: 6;"/>
         </VBox>
     </left>
 
     <!-- ===== CONTENIDO DINÁMICO ===== -->
     <center>
         <StackPane fx:id="contenidoPrincipal"
-                   style="-fx-background-color: #141a0e;"
+                   style="-fx-background-color: #f5f5f4;"
                    BorderPane.alignment="CENTER"/>
     </center>
 

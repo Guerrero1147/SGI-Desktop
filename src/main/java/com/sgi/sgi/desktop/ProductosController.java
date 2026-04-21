@@ -71,14 +71,14 @@ public class ProductosController implements Initializable {
 
         // Columna de acciones con botones Editar y Eliminar
         colAcciones.setCellFactory(col -> new TableCell<>() {
-            private final Button btnEditar = new Button("✏️ Editar");
-            private final Button btnEliminar = new Button("🗑️ Eliminar");
+            private final Button btnEditar = new Button("✏ Editar");
+            private final Button btnEliminar = new Button("🗑 Eliminar");
             private final HBox hbox = new HBox(5, btnEditar, btnEliminar);
 
             {
-                btnEditar.setStyle("-fx-background-color: rgba(245,166,35,0.12); -fx-text-fill: #f5a623; " +
+                btnEditar.setStyle("-fx-background-color: rgba(59,130,246,0.12); -fx-text-fill: #3b82f6; " +
                         "-fx-font-size: 11px; -fx-background-radius: 4; -fx-cursor: hand; " +
-                        "-fx-padding: 4 10 4 10; -fx-border-color: rgba(0,212,245,0.25); -fx-border-radius: 4;");
+                        "-fx-padding: 4 10 4 10; -fx-border-color: rgba(59,130,246,0.25); -fx-border-radius: 4;");
                 btnEliminar.setStyle("-fx-background-color: rgba(239,68,68,0.1); -fx-text-fill: #ef4444; " +
                         "-fx-font-size: 11px; -fx-background-radius: 4; -fx-cursor: hand; " +
                         "-fx-padding: 4 10 4 10; -fx-border-color: rgba(239,68,68,0.25); -fx-border-radius: 4;");

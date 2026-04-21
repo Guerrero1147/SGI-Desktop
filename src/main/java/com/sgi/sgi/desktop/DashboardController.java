@@ -46,13 +46,13 @@ public class DashboardController implements Initializable{
     private String rolUsuario = "";
 
     private final String ESTILO_ACTIVO =
-        "-fx-background-color: #1f3014; -fx-text-fill: #f5a623; " +
+        "-fx-background-color: #000000; -fx-text-fill: #ffffff; " +
         "-fx-font-size: 13px; -fx-padding: 10 12 10 16; -fx-cursor: hand; " +
         "-fx-background-radius: 6; -fx-alignment: CENTER-LEFT; " +
-        "-fx-border-color: transparent transparent transparent #f5a623; " +
+        "-fx-border-color: transparent transparent transparent #ffffff; " +
         "-fx-border-width: 0 0 0 3;";
     private final String ESTILO_INACTIVO =
-        "-fx-background-color: transparent; -fx-text-fill: #a3b891; " +
+        "-fx-background-color: transparent; -fx-text-fill: #6b7280; " +
         "-fx-font-size: 13px; -fx-padding: 10 12 10 16; -fx-cursor: hand; " +
         "-fx-background-radius: 6; -fx-alignment: CENTER-LEFT; " +
         "-fx-border-color: transparent; -fx-border-width: 0;";
@@ -140,9 +140,9 @@ public class DashboardController implements Initializable{
     private void mostrarProximamente(String modulo) {
         VBox vbox = new VBox();
         vbox.setAlignment(Pos.CENTER);
-        vbox.setStyle("-fx-background-color: #141a0e;");
+        vbox.setStyle("-fx-background-color: #ffffff;");
         Label lbl = new Label("🚧 Módulo " + modulo + " próximamente");
-        lbl.setStyle("-fx-text-fill: #546e7a; -fx-font-size: 20px;");
+        lbl.setStyle("-fx-text-fill: #6b7280; -fx-font-size: 20px;");
         vbox.getChildren().add(lbl);
         contenidoPrincipal.getChildren().clear();
         contenidoPrincipal.getChildren().add(vbox);
@@ -158,15 +158,15 @@ public class DashboardController implements Initializable{
         try {
             ScrollPane scrollPane = new ScrollPane();
             scrollPane.setFitToWidth(true);
-            scrollPane.setStyle("-fx-background: #141a0e; -fx-background-color: #141a0e;");
+            scrollPane.setStyle("-fx-background: #ffffff; -fx-background-color: #ffffff;");
 
             VBox vbox = new VBox(20);
-            vbox.setStyle("-fx-padding: 25; -fx-background-color: #141a0e;");
+            vbox.setStyle("-fx-padding: 25; -fx-background-color: #ffffff;");
             vbox.setFillWidth(true);
 
             // Título
             Label titulo = new Label("Inicio");
-            titulo.setStyle("-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: white;");
+            titulo.setStyle("-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #1c1c1c;");
             vbox.getChildren().add(titulo);
 
             // Tarjetas
@@ -178,10 +178,10 @@ public class DashboardController implements Initializable{
             HBox tarjetas = new HBox(15);
             tarjetas.setFillHeight(true);
             tarjetas.getChildren().addAll(
-                crearTarjeta("📦 Total Productos", String.valueOf(totalProductos), "productos registrados", "white",   "#90caf9"),
-                crearTarjeta("⚠ Stock Bajo",      String.valueOf(stockBajo),      "productos por agotarse","#ff7043","#ffb74d"),
-                crearTarjeta("📥 Entradas",    String.valueOf(entradasHoy),    "movimientos de entrada","#66bb6a","#81c784"),
-                crearTarjeta("📤 Salidas",     String.valueOf(salidasHoy),     "movimientos de salida", "#ef5350","#ef9a9a")
+                crearTarjeta("📦 Total Productos", String.valueOf(totalProductos), "Productos registrados", "#90caf9",   "#90caf9"),
+                crearTarjeta("⚠ Stock Bajo",      String.valueOf(stockBajo),      "Productos por agotarse","#ff7043","#ffb74d"),
+                crearTarjeta("📥 Entradas",    String.valueOf(entradasHoy),    "Movimientos de entrada","#66bb6a","#81c784"),
+                crearTarjeta("📤 Salidas",     String.valueOf(salidasHoy),     "Movimientos de salida", "#ef5350","#ef9a9a")
             );
             for (javafx.scene.Node n : tarjetas.getChildren())
                 HBox.setHgrow(n, Priority.ALWAYS);
@@ -193,19 +193,19 @@ public class DashboardController implements Initializable{
 
             // Gráfica
             VBox graficaBox = new VBox(10);
-            graficaBox.setStyle("-fx-background-color: #1e2714; -fx-background-radius: 10; -fx-padding: 20;");
+            graficaBox.setStyle("-fx-background-color: #1c1c1c; -fx-background-radius: 10; -fx-padding: 20;");
             HBox.setHgrow(graficaBox, Priority.ALWAYS);
 
             Label lblGrafica = new Label("Gráfica de Inventario");
-            lblGrafica.setStyle("-fx-text-fill: #ecf0e5; -fx-font-size: 14px; -fx-font-weight: bold;");
+            lblGrafica.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-font-weight: bold;");
 
             CategoryAxis ejeX = new CategoryAxis();
             ejeX.setLabel("Productos");
-            ejeX.setTickLabelFill(javafx.scene.paint.Color.web("#90caf9"));
+            ejeX.setTickLabelFill(javafx.scene.paint.Color.web("#ffffff"));
 
             NumberAxis ejeY = new NumberAxis();
             ejeY.setLabel("Cantidad");
-            ejeY.setTickLabelFill(javafx.scene.paint.Color.web("#90caf9"));
+            ejeY.setTickLabelFill(javafx.scene.paint.Color.web("#ffffff"));
 
             BarChart<String, Number> barChart = new BarChart<>(ejeX, ejeY);
             barChart.setStyle("-fx-background-color: transparent;");
@@ -230,7 +230,7 @@ public class DashboardController implements Initializable{
 
             // Stock bajo
             VBox stockBox = new VBox(10);
-            stockBox.setStyle("-fx-background-color: #1e2714; -fx-background-radius: 10; -fx-padding: 20;");
+            stockBox.setStyle("-fx-background-color: #1c1c1c; -fx-background-radius: 10; -fx-padding: 20;");
             stockBox.setPrefWidth(280);
             stockBox.setMinWidth(280);
 
@@ -238,7 +238,7 @@ public class DashboardController implements Initializable{
             lblStockBajo.setStyle("-fx-text-fill: #ffb74d; -fx-font-size: 13px; -fx-font-weight: bold;");
 
             TableView<ProductosController.Producto> tablaStock = new TableView<>();
-            tablaStock.setStyle("-fx-background-color: #1e2714; -fx-border-color: #2a3820;");
+            tablaStock.setStyle("-fx-background-color: #1c1c1c; -fx-border-color: #333333;");
             VBox.setVgrow(tablaStock, Priority.ALWAYS);
 
             TableColumn<ProductosController.Producto, String>  cNom  = new TableColumn<>("Producto");
@@ -281,15 +281,15 @@ public class DashboardController implements Initializable{
 
             // ── Últimos Movimientos ─────────────────────────────────────────
             VBox tablaBox = new VBox(10);
-            tablaBox.setStyle("-fx-background-color: #1e2714; -fx-background-radius: 10; -fx-padding: 20;");
+            tablaBox.setStyle("-fx-background-color: #1c1c1c; -fx-background-radius: 10; -fx-padding: 20;");
             HBox.setHgrow(tablaBox, Priority.ALWAYS);
 
             Label lblMovimientos = new Label("Últimos Movimientos");
-            lblMovimientos.setStyle("-fx-text-fill: #ecf0e5; -fx-font-size: 14px; -fx-font-weight: bold;");
+            lblMovimientos.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-font-weight: bold;");
 
             TableView<MovimientoResumen> tabla = new TableView<>();
             tabla.setPrefHeight(220);
-            tabla.setStyle("-fx-background-color: #1e2714; -fx-border-color: #2a3820;");
+            tabla.setStyle("-fx-background-color: #1c1c1c; -fx-border-color: #333333;");
 
             TableColumn<MovimientoResumen, String>  cFecha  = new TableColumn<>("Fecha");
             TableColumn<MovimientoResumen, String>  cTipo   = new TableColumn<>("Tipo");
@@ -324,16 +324,16 @@ public class DashboardController implements Initializable{
 
             // ── Cortes de Caja ──────────────────────────────────────────────
             VBox cortesBox = new VBox(10);
-            cortesBox.setStyle("-fx-background-color: #1e2714; -fx-background-radius: 10; -fx-padding: 20;");
+            cortesBox.setStyle("-fx-background-color: #1c1c1c; -fx-background-radius: 10; -fx-padding: 20;");
             cortesBox.setPrefWidth(370);
             cortesBox.setMinWidth(340);
 
             Label lblCortes = new Label("📊 Cortes de Caja");
-            lblCortes.setStyle("-fx-text-fill: #ecf0e5; -fx-font-size: 14px; -fx-font-weight: bold;");
+            lblCortes.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-font-weight: bold;");
 
             TableView<CorteDeCaja> tablaCortes = new TableView<>();
             tablaCortes.setPrefHeight(220);
-            tablaCortes.setStyle("-fx-background-color: #1e2714; -fx-border-color: #2a3820;");
+            tablaCortes.setStyle("-fx-background-color: #1c1c1c; -fx-border-color: #333333;");
             VBox.setVgrow(tablaCortes, Priority.ALWAYS);
 
             TableColumn<CorteDeCaja, String> ccFecha   = new TableColumn<>("Fecha");
@@ -362,7 +362,7 @@ public class DashboardController implements Initializable{
             ccTicket.setPrefWidth(80);
             ccTicket.setCellFactory(col -> new TableCell<>() {
                 private final Button btn = new Button("🎫 Ver");
-                { btn.setStyle("-fx-background-color: #f5a623; -fx-text-fill: white;" +
+                { btn.setStyle("-fx-background-color: #1c1c1c; -fx-text-fill: white;" +
                                "-fx-background-radius: 4; -fx-cursor: hand; -fx-font-size: 11px;");
                   btn.setOnAction(e -> {
                       CorteDeCaja c = getTableView().getItems().get(getIndex());
@@ -396,13 +396,13 @@ public class DashboardController implements Initializable{
     private VBox crearTarjeta(String titulo, String valor, String subtitulo,
                                String colorValor, String colorTitulo) {
         VBox card = new VBox(5);
-        card.setStyle("-fx-background-color: #1e2714; -fx-background-radius: 10; -fx-padding: 20;");
+        card.setStyle("-fx-background-color: #1c1c1c; -fx-background-radius: 10; -fx-padding: 20;");
         Label t = new Label(titulo);
         t.setStyle("-fx-text-fill: " + colorTitulo + "; -fx-font-size: 12px;");
         Label v = new Label(valor);
         v.setStyle("-fx-text-fill: " + colorValor + "; -fx-font-size: 32px; -fx-font-weight: bold;");
         Label s = new Label(subtitulo);
-        s.setStyle("-fx-text-fill: #546e7a; -fx-font-size: 11px;");
+        s.setStyle("-fx-text-fill: #9ca3af; -fx-font-size: 11px;");
         card.getChildren().addAll(t, v, s);
         return card;
     }
@@ -517,14 +517,14 @@ public class DashboardController implements Initializable{
             txt.setEditable(false);
             txt.setPrefSize(460, 340);
             txt.setStyle("-fx-font-family: 'Courier New', monospace; -fx-font-size: 12px;" +
-                         "-fx-background-color: #141a0e; -fx-text-fill: #d4e8c2;" +
-                         "-fx-control-inner-background: #141a0e;");
+                         "-fx-background-color: #ffffff; -fx-text-fill: #1c1c1c;" +
+                         "-fx-control-inner-background: #ffffff;");
 
             Dialog<Void> d = new Dialog<>();
             d.setTitle("Ticket — " + c.getFecha());
             d.setHeaderText(null);
             d.getDialogPane().setContent(txt);
-            d.getDialogPane().setStyle("-fx-background-color: #141a0e;");
+            d.getDialogPane().setStyle("-fx-background-color: #ffffff;");
             d.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
             d.showAndWait();
         } catch (Exception e) { e.printStackTrace(); }

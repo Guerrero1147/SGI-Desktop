@@ -112,7 +112,7 @@ public class MovimientosController implements Initializable {
         // Botones Ver + Eliminar (Eliminar solo visible para ADMIN)
         colAcciones.setCellFactory(col -> new TableCell<>() {
             private final Button btnVer      = new Button("👁 Ver");
-            private final Button btnEliminar = new Button("🗑️ Eliminar");
+            private final Button btnEliminar = new Button("🗑 Eliminar");
             private final HBox   hbox        = new HBox(6, btnVer, btnEliminar);
             {
                 btnVer.setStyle("-fx-background-color: rgba(16,185,129,0.12); -fx-text-fill: #10b981; " +
