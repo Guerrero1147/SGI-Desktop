@@ -59,7 +59,7 @@ cd SGI-Desktop
    db.password=tu_contraseña
    ```
 
-> 🔒 El archivo `config.properties` **no se sube al repositorio** (está en `.gitignore`) para proteger tus credenciales.
+> 🔒 El archivo `config.properties` **no se subío al repositorio** (está en `.gitignore`) para proteger las credenciales.
 
 ---
 
@@ -114,7 +114,9 @@ SGI-Desktop/
 
 ## 🎨 Diseño
 
-La interfaz utiliza un **tema oscuro** inspirado en la paleta del logo oficial de SGI. Todos los estilos están centralizados en `estilo.css`, que actúa como design system de la aplicación e incluye estilos para tablas, inputs, botones, sidebar, combo boxes, tooltips y scroll panes.
+La interfaz utiliza un **tema claro** con una paleta neutra (blanco, gris y negro) para una experiencia más limpia y amigable. Todos los estilos están centralizados en `estilo.css`, que actúa como design system de la aplicación e incluye estilos para tablas, inputs, botones, sidebar, combo boxes, tooltips y scroll panes.
+
+En esta versión se corrigieron errores visuales y se mejoró el diseño general para hacer la aplicación más intuitiva y agradable para el usuario.
 
 Los diálogos de confirmación (guardar, eliminar, cerrar sesión y corte de caja) están implementados en `ConfirmDialog.java`, con estilos y colores consistentes al tema de la aplicación.
 
