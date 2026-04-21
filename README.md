@@ -59,7 +59,7 @@ cd SGI-Desktop
    db.password=tu_contraseña
    ```
 
-> 🔒 El archivo `config.properties` **no se sube al repositorio** (está en `.gitignore`) para proteger tus credenciales.
+> 🔒 El archivo `config.properties` **no se subío al repositorio** (está en `.gitignore`) para proteger las credenciales.
 
 ---
 
